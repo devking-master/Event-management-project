@@ -1,0 +1,113 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <!-- Gradient Definitions -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ec4899;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+
+    <radialGradient id="glowGradient" cx="30%" cy="30%">
+      <stop offset="0%" style="stop-color:rgba(168, 85, 247, 0.3);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(168, 85, 247, 0);stop-opacity:1" />
+    </radialGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+    </filter>
+
+    <!-- Animations -->
+    <style>
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      @keyframes rotateReverse {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 0.3; filter: blur(2px); }
+        50% { opacity: 0.6; filter: blur(8px); }
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translate(0, -30px); opacity: 0; }
+        25% { opacity: 1; }
+        50% { transform: translate(30px, 30px); opacity: 1; }
+        75% { opacity: 1; }
+        100% { transform: translate(0, -30px); opacity: 0; }
+      }
+
+      .logo-rotate { animation: rotate 6s linear infinite; }
+      .logo-rotate-reverse { animation: rotateReverse 8s linear infinite; }
+      .logo-rotate-slow { animation: rotate 10s linear infinite; }
+      .glow-pulse { animation: pulse 3s ease-in-out infinite; }
+      .float-dot { animation: float 4s ease-in-out infinite; }
+    </style>
+  </defs>
+
+  <!-- Background glow -->
+  <rect x="10" y="10" width="180" height="180" rx="30" fill="url(#glowGradient)" class="glow-pulse" opacity="0.3"/>
+
+  <!-- Main Container Group -->
+  <g id="logo-main">
+    
+    <!-- Circle 1 - Purple outer -->
+    <circle cx="100" cy="100" r="75" 
+            fill="none" stroke="#a855f7" stroke-width="3"
+            filter="url(#glow)"
+            class="logo-rotate"
+            style="box-shadow: 0 0 20px rgba(168, 85, 247, 0.4)"/>
+
+    <!-- Circle 2 - Pink middle -->
+    <circle cx="100" cy="100" r="55" 
+            fill="none" stroke="#ec4899" stroke-width="3"
+            filter="url(#glow)"
+            class="logo-rotate-reverse"
+            style="box-shadow: 0 0 15px rgba(236, 72, 153, 0.3)"/>
+
+    <!-- Circle 3 - Cyan inner -->
+    <circle cx="100" cy="100" r="35" 
+            fill="none" stroke="#06b6d4" stroke-width="3"
+            filter="url(#glow)"
+            class="logo-rotate-slow"
+            style="box-shadow: 0 0 25px rgba(6, 182, 212, 0.5)"/>
+
+    <!-- Floating dot -->
+    <circle cx="100" cy="70" r="6" 
+            fill="url(#mainGradient)"
+            filter="url(#glow)"
+            class="float-dot"/>
+
+  </g>
+
+  <!-- Optional: Text version -->
+  <defs>
+    <style>
+      .eventflow-text {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 32px;
+        font-weight: 900;
+        letter-spacing: -1px;
+        fill: url(#mainGradient);
+        filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4));
+      }
+    </style>
+  </defs>
+
+  <!-- Uncomment below to add text
+  <text x="100" y="180" text-anchor="middle" class="eventflow-text">EventFlow</text>
+  -->
+
+</svg>

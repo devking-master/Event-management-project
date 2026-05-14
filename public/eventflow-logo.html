@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventFlow - Premium 3D Logo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f0f2e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            padding: 60px 20px;
+            max-width: 1600px;
+            width: 100%;
+        }
+
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #a78bfa;
+            margin-bottom: 20px;
+        }
+
+        /* ===== MAIN LOGO VERSION ===== */
+        .logo-canvas {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px;
+            background: radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 0.1) 0%, transparent 60%);
+            border-radius: 40px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            box-shadow: 
+                inset 0 0 60px rgba(168, 85, 247, 0.1),
+                0 0 100px rgba(168, 85, 247, 0.15),
+                0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .logo-icon {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            transform-style: preserve-3d;
+            animation: rotateLogoSlow 20s infinite linear;
+        }
+
+        @keyframes rotateLogoSlow {
+            from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            to { transform: rotateX(360deg) rotateY(360deg) rotateZ(0deg); }
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #06b6d4 100%);
+            border-radius: 30px;
+            filter: blur(2px);
+            opacity: 0.3;
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; filter: blur(2px); }
+            50% { opacity: 0.6; filter: blur(8px); }
+        }
+
+        .flow-circle {
+            position: absolute;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: rotateCircle 6s linear infinite;
+        }
+
+        .circle-1 {
+            width: 150px;
+            height: 150px;
+            top: 25px;
+            left: 25px;
+            border-color: #a855f7;
+            animation: rotateCircle 6s linear infinite;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), inset 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .circle-2 {
+            width: 110px;
+            height: 110px;
+            top: 45px;
+            left: 45px;
+            border-color: #ec4899;
+            animation: rotateCircleReverse 8s linear infinite;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+        }
+
+        .circle-3 {
+            width: 70px;
+            height: 70px;
+            top: 65px;
+            left: 65px;
+            border-color: #06b6d4;
+            animation: rotateCircle 10s linear infinite;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+        }
+
+        @keyframes rotateCircle {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateCircleReverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        .flow-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, #a855f7);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.8), 0 0 30px rgba(168, 85, 247, 0.4);
+            top: 50%;
+            left: 50%;
+            margin: -6px 0 0 -6px;
+            animation: moveDot 4s ease-in-out infinite;
+        }
+
+        @keyframes moveDot {
+            0%, 100% { 
+                transform: translate(0, -50px);
+                opacity: 0;
+            }
+            25% {
+                opacity: 1;
+            }
+            50% {
+                transform: translate(50px, 50px);
+                opacity: 1;
+            }
+            75% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(0, -50px);
+                opacity: 0;
+            }
+        }
+
+        /* ===== ICON-ONLY VERSION ===== */
+        .icon-only-canvas {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+            border-radius: 35px;
+            border: 1px solid rgba(168, 85, 247, 0.15);
+            box-shadow: 
+                inset 0 0 50px rgba(168, 85, 247, 0.08),
+                0 0 80px rgba(168, 85, 247, 0.1);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-only {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateIcon 15s infinite linear;
+        }
+
+        @keyframes rotateIcon {
+            from { transform: rotateY(0deg) rotateX(10deg); }
+            to { transform: rotateY(360deg) rotateX(10deg); }
+        }
+
+        .e-letter {
+            position: absolute;
+            font-size: 90px;
+            font-weight: 900;
+            letter-spacing: -5px;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.5));
+            animation: floatText 4s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+        }
+
+        @keyframes floatText {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ===== DARK BACKGROUND VERSION ===== */
+        .dark-bg-canvas {
+            width: 320px;
+            height: 320px;
+            background: #000;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 0 60px rgba(168, 85, 247, 0.2), inset 0 0 60px rgba(168, 85, 247, 0.05);
+        }
+
+        .dark-logo {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            animation: rotateLogoSlow 20s infinite linear;
+        }
+
+        .neon-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid;
+            animation: pulseBorder 2s ease-in-out infinite;
+        }
+
+        .ring-1 {
+            width: 180px;
+            height: 180px;
+            border-color: #a855f7;
+            top: 10px;
+            left: 10px;
+            box-shadow: 
+                0 0 20px #a855f7,
+                inset 0 0 20px rgba(168, 85, 247, 0.2),
+                0 0 40px rgba(168, 85, 247, 0.3);
+        }
+
+        .ring-2 {
+            width: 120px;
+            height: 120px;
+            border-color: #ec4899;
+            top: 40px;
+            left: 40px;
+            animation: pulseBorder 2.5s ease-in-out infinite;
+            box-shadow: 0 0 25px #ec4899, inset 0 0 15px rgba(236, 72, 153, 0.2);
+        }
+
+        .ring-3 {
+            width: 60px;
+            height: 60px;
+            border-color: #06b6d4;
+            top: 70px;
+            left: 70px;
+            animation: pulseBorder 3s ease-in-out infinite;
+            box-shadow: 0 0 30px #06b6d4, inset 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+
+        @keyframes pulseBorder {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        /* ===== TRANSPARENT VERSION ===== */
+        .transparent-canvas {
+            width: 300px;
+            height: 300px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .transparent-logo {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            animation: rotateLogoSlow 20s infinite linear;
+        }
+
+        .gradient-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #a855f7 0deg,
+                #ec4899 120deg,
+                #06b6d4 240deg,
+                #a855f7 360deg
+            );
+            animation: rotateCircle 8s linear infinite;
+            filter: blur(1px);
+        }
+
+        .gc-1 {
+            width: 160px;
+            height: 160px;
+            top: 20px;
+            left: 20px;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .gc-2 {
+            width: 110px;
+            height: 110px;
+            top: 45px;
+            left: 45px;
+            opacity: 0.7;
+            animation: rotateCircleReverse 10s linear infinite;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.2);
+        }
+
+        .gc-3 {
+            width: 60px;
+            height: 60px;
+            top: 70px;
+            left: 70px;
+            opacity: 0.5;
+            animation: rotateCircle 12s linear infinite;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.15);
+        }
+
+        /* ===== TEXT & BRANDING ===== */
+        .text-section {
+            text-align: center;
+        }
+
+        .brand-text {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: textGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 0px rgba(168, 85, 247, 0.3));
+                text-shadow: none;
+            }
+            50% {
+                filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.5));
+                text-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+            }
+        }
+
+        .tagline {
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        /* ===== MOCKUP SECTIONS ===== */
+        .mockup-item {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 30px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .mockup-item:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+        }
+
+        .dashboard-mockup {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(135deg, #1a1a3e 0%, #2a1a4e 100%);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #a855f7, transparent);
+        }
+
+        .navbar-mockup {
+            width: 100%;
+            height: 60px;
+            background: rgba(10, 14, 39, 0.6);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-placeholder {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 20px;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 30px 15px;
+            }
+
+            .brand-text {
+                font-size: 28px;
+            }
+
+            .logo-canvas,
+            .icon-only-canvas,
+            .dark-bg-canvas {
+                width: 280px;
+                height: 280px;
+            }
+        }
+
+        /* ===== ANIMATED PRESENTATION ===== */
+        .presentation-container {
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f0f2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 60px;
+            padding: 60px 20px;
+        }
+
+        .hero-logo {
+            width: 400px;
+            height: 400px;
+            perspective: 1200px;
+            animation: heroFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+            50% { transform: translateY(-30px) rotateZ(5deg); }
+        }
+
+        .hero-text {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #a78bfa;
+            margin-bottom: 40px;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.6);
+        }
+
+        .cta-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a78bfa;
+            font-size: 14px;
+            border-top: 1px solid rgba(168, 85, 247, 0.1);
+            margin-top: 60px;
+        }
+
+        .specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .spec-card {
+            background: rgba(168, 85, 247, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .spec-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #06b6d4;
+            margin-bottom: 10px;
+        }
+
+        .spec-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- MAIN LOGO VERSION -->
+        <div class="logo-section">
+            <h3 class="section-title">Main Logo Version</h3>
+            <div class="logo-canvas">
+                <div class="logo-icon">
+                    <div class="flow-circle circle-1"></div>
+                    <div class="flow-circle circle-2"></div>
+                    <div class="flow-circle circle-3"></div>
+                    <div class="flow-dot"></div>
+                </div>
+            </div>
+            <div class="text-section">
+                <div class="brand-text">EventFlow</div>
+                <div class="tagline">Premium Event Management</div>
+            </div>
+        </div>
+
+        <!-- ICON-ONLY VERSION -->
+        <div class="logo-section">
+            <h3 class="section-title">Icon-Only Version</h3>
+            <div class="icon-only-canvas">
+                <div class="icon-only">
+                    <div class="e-letter">E</div>
+                </div>
+            </div>
+            <div class="text-section">
+                <p style="font-size: 12px; color: #a78bfa; margin-top: 10px;">Standalone Icon</p>
+            </div>
+        </div>
+
+        <!-- DARK BACKGROUND VERSION -->
+        <div class="logo-section">
+            <h3 class="section-title">Dark Background Version</h3>
+            <div class="dark-bg-canvas">
+                <div class="dark-logo">
+                    <div class="neon-ring ring-1"></div>
+                    <div class="neon-ring ring-2"></div>
+                    <div class="neon-ring ring-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRANSPARENT VERSION -->
+        <div class="logo-section">
+            <h3 class="section-title">Transparent Background</h3>
+            <div class="transparent-canvas">
+                <div class="transparent-logo">
+                    <div class="gradient-circle gc-1"></div>
+                    <div class="gradient-circle gc-2"></div>
+                    <div class="gradient-circle gc-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVBAR MOCKUP -->
+        <div class="logo-section">
+            <h3 class="section-title">Navbar Implementation</h3>
+            <div class="navbar-mockup">
+                <div class="logo-placeholder">E</div>
+                <div style="flex: 1; text-align: left; font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">EventFlow</div>
+                <div style="width: 40px; height: 8px; background: rgba(168, 85, 247, 0.3); border-radius: 4px;"></div>
+                <div style="width: 40px; height: 8px; background: rgba(168, 85, 247, 0.2); border-radius: 4px;"></div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD MOCKUP -->
+        <div class="logo-section">
+            <h3 class="section-title">Dashboard Integration</h3>
+            <div class="dashboard-mockup">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                    <div class="logo-placeholder" style="width: 80px; height: 80px; font-size: 40px;">E</div>
+                    <div style="font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">EventFlow Dashboard</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPECIFICATIONS -->
+    <div style="width: 100%; text-align: center; padding: 60px 20px;">
+        <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px;">Logo Specifications</h2>
+        <div class="specs">
+            <div class="spec-card">
+                <div class="spec-label">Style</div>
+                <div class="spec-value">3D Glassmorphism</div>
+            </div>
+            <div class="spec-card">
+                <div class="spec-label">Primary Color</div>
+                <div class="spec-value">#A855F7</div>
+            </div>
+            <div class="spec-card">
+                <div class="spec-label">Secondary Color</div>
+                <div class="spec-value">#EC4899</div>
+            </div>
+            <div class="spec-card">
+                <div class="spec-label">Accent Color</div>
+                <div class="spec-value">#06B6D4</div>
+            </div>
+            <div class="spec-card">
+                <div class="spec-label">Font</div>
+                <div class="spec-value">Inter Bold 900</div>
+            </div>
+            <div class="spec-card">
+                <div class="spec-label">Format</div>
+                <div class="spec-value">SVG / CSS</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BRAND GUIDELINES -->
+    <div style="width: 100%; background: linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%); border-top: 1px solid rgba(168, 85, 247, 0.1); border-bottom: 1px solid rgba(168, 85, 247, 0.1); padding: 60px 20px;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 40px; text-align: center;">Brand Guidelines</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                <div style="background: rgba(10, 14, 39, 0.4); border: 1px solid rgba(168, 85, 247, 0.1); border-radius: 20px; padding: 30px; backdrop-filter: blur(10px);">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #a78bfa;">Visual Identity</h3>
+                    <ul style="list-style: none; color: #a78bfa; font-size: 14px; line-height: 1.8;">
+                        <li>✓ Modern & Futuristic</li>
+                        <li>✓ Premium Quality</li>
+                        <li>✓ 3D Depth & Dimension</li>
+                        <li>✓ Smooth Animations</li>
+                        <li>✓ Neon Accents</li>
+                    </ul>
+                </div>
+                <div style="background: rgba(10, 14, 39, 0.4); border: 1px solid rgba(168, 85, 247, 0.1); border-radius: 20px; padding: 30px; backdrop-filter: blur(10px);">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #a78bfa;">Use Cases</h3>
+                    <ul style="list-style: none; color: #a78bfa; font-size: 14px; line-height: 1.8;">
+                        <li>✓ Website Header</li>
+                        <li>✓ Mobile App Icon</li>
+                        <li>✓ Favicon</li>
+                        <li>✓ Social Media</li>
+                        <li>✓ Print Materials</li>
+                    </ul>
+                </div>
+                <div style="background: rgba(10, 14, 39, 0.4); border: 1px solid rgba(168, 85, 247, 0.1); border-radius: 20px; padding: 30px; backdrop-filter: blur(10px);">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #a78bfa;">Color Palette</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <div style="width: 30px; height: 30px; background: #a855f7; border-radius: 8px; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);"></div>
+                        <div style="width: 30px; height: 30px; background: #ec4899; border-radius: 8px; box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);"></div>
+                        <div style="width: 30px; height: 30px; background: #06b6d4; border-radius: 8px; box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);"></div>
+                    </div>
+                    <p style="color: #a78bfa; font-size: 12px;">Premium Dark Tech Colors</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>EventFlow Premium Logo Design © 2026</p>
+        <p>Modern. Luxurious. Futuristic. Investor-Ready.</p>
+    </footer>
+
+</body>
+</html>
