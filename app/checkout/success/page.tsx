@@ -1,67 +1,85 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
-import { CheckCircle2, Ticket, ArrowRight, Download, Share2, Calendar, MapPin } from "lucide-react";
+import {
+  CheckCircle2,
+  Ticket,
+  ArrowRight,
+  Download,
+  Share2,
+  Calendar,
+  MapPin,
+} from "lucide-react";
+
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
+
   const router = useRouter();
+
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<any>(null);
 
   useEffect(() => {
     if (orderId) {
       fetch(`/api/orders/${orderId}`)
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => res.json())
+        .then((data) => {
           setOrder(data.order);
           setLoading(false);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           setLoading(false);
         });
+    } else {
+      setLoading(false);
     }
   }, [orderId]);
 
-  if (loading) return (
-    <div className="min-h-screen bg-night flex items-center justify-center">
-      <motion.div 
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full border-2 border-neon-purple/20 border-t-neon-purple shadow-glow"
-      />
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-night flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+          className="h-11 w-11 sm:h-12 sm:w-12 rounded-full border-2 border-neon-purple/20 border-t-neon-purple shadow-glow"
+        />
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-night pb-20 sm:pb-24 lg:pb-32">
       <Navbar />
-      
+
       <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 pt-28 sm:pt-32 lg:pt-40">
         <div className="text-center mb-10 sm:mb-12 lg:mb-16">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            className="mx-auto mb-8 grid h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 place-items-center rounded-full bg-emerald-500/20 text-emerald-400 shadow-[0_0_50px_rgba(16,185,129,0.2)]"
+            className="mx-auto mb-8 grid h-20 w-20 lg:h-24 lg:w-24 place-items-center rounded-full bg-emerald-500/20 text-emerald-400 shadow-[0_0_50px_rgba(16,185,129,0.2)]"
           >
             <CheckCircle2 size={48} />
           </motion.div>
-          <motion.h1 
+
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl font-black tracking-tight break-words mb-4"
+            className="text-2xl sm:text-3xl lg:text-5xl font-black tracking-tight break-words mb-4"
           >
-            Transmission <span className="text-emerald-400">Successful</span>
+            Transmission{" "}
+            <span className="text-emerald-400">Successful</span>
           </motion.h1>
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -71,72 +89,127 @@ export default function SuccessPage() {
           </motion.p>
         </div>
 
-        <div className="grid gap-4 sm:p-5 lg:p-6 sm:gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:gap-5 sm:p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:p-12 lg:grid-cols-[1fr_0.7fr]">
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.7fr]">
           <div className="space-y-8">
             <Card className="p-0 overflow-hidden" animate={false}>
-              <div className="bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 border-b border-white/5">
+              <div className="bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 p-5 lg:p-8 border-b border-white/5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                     <Ticket className="text-white" size={24} />
-                    <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/60">Digital Asset Pass</span>
+
+                    <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/60">
+                      Digital Asset Pass
+                    </span>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white px-3 py-1 rounded-full shadow-glow">Verified</span>
+
+                  <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white px-3 py-1 rounded-full shadow-glow">
+                    Verified
+                  </span>
                 </div>
               </div>
-              
+
               <div className="p-5 sm:p-7 lg:p-10 space-y-10">
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-black mb-2">{order?.eventId?.title}</h2>
-                  <div className="flex flex-wrap gap-4 sm:p-5 lg:p-6 mt-4">
+                  <h2 className="text-2xl sm:text-3xl font-black mb-2">
+                    {order?.eventId?.title}
+                  </h2>
+
+                  <div className="flex flex-wrap gap-4 mt-4">
                     <div className="flex items-center gap-2 text-sm text-white/50">
-                      <Calendar size={16} className="text-neon-purple" />
-                      {order?.eventId?.date && new Date(order.eventId.date).toLocaleDateString()}
+                      <Calendar
+                        size={16}
+                        className="text-neon-purple"
+                      />
+
+                      {order?.eventId?.date &&
+                        new Date(
+                          order.eventId.date
+                        ).toLocaleDateString()}
                     </div>
+
                     <div className="flex items-center gap-2 text-sm text-white/50">
-                      <MapPin size={16} className="text-neon-cyan" />
+                      <MapPin
+                        size={16}
+                        className="text-neon-cyan"
+                      />
+
                       {order?.eventId?.location}
                     </div>
                   </div>
                 </div>
 
-                <div className="grid gap-4 sm:p-5 lg:p-6">
+                <div className="grid gap-4">
                   {order?.tickets?.map((item: any, i: number) => (
-                    <div key={i} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 lg:p-6 rounded-3xl bg-white/5 border border-white/10">
+                    <div
+                      key={i}
+                      className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-6 rounded-3xl bg-white/5 border border-white/10"
+                    >
                       <div>
-                        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">Access Level</p>
-                        <p className="text-xl font-black text-neon-purple">{item.type}</p>
+                        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">
+                          Access Level
+                        </p>
+
+                        <p className="text-xl font-black text-neon-purple">
+                          {item.type}
+                        </p>
                       </div>
+
                       <div className="text-right">
-                        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">Quantity</p>
-                        <p className="text-xl font-black">{item.quantity} Tickets</p>
+                        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">
+                          Quantity
+                        </p>
+
+                        <p className="text-xl font-black">
+                          {item.quantity} Tickets
+                        </p>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="pt-8 border-t border-white/5 flex flex-wrap gap-4">
-                  <Button variant="secondary" icon={Download} className="flex-1">Download Pass</Button>
-                  <Button variant="secondary" icon={Share2} className="flex-1">Share Access</Button>
+                  <Button
+                    variant="secondary"
+                    icon={Download}
+                    className="flex-1"
+                  >
+                    Download Pass
+                  </Button>
+
+                  <Button
+                    variant="secondary"
+                    icon={Share2}
+                    className="flex-1"
+                  >
+                    Share Access
+                  </Button>
                 </div>
               </div>
             </Card>
           </div>
 
           <aside className="space-y-8">
-            <Card className="bg-neon-purple/5 border-neon-purple/20" animate={false}>
-              <h3 className="text-xl font-black mb-6">Next Operations</h3>
+            <Card
+              className="bg-neon-purple/5 border-neon-purple/20"
+              animate={false}
+            >
+              <h3 className="text-xl font-black mb-6">
+                Next Operations
+              </h3>
+
               <div className="space-y-4">
-                <Button 
+                <Button
                   onClick={() => router.push("/dashboard/tickets")}
-                  variant="neon" 
+                  variant="neon"
                   className="w-full justify-between"
                   icon={ArrowRight}
                 >
                   View My Tickets
                 </Button>
-                <Button 
+
+                <Button
                   onClick={() => router.push("/events")}
-                  variant="outline" 
+                  variant="outline"
                   className="w-full"
                 >
                   Explore More
@@ -144,13 +217,40 @@ export default function SuccessPage() {
               </div>
             </Card>
 
-            <div className="p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 rounded-3xl lg:rounded-[2.5rem] bg-white/[0.02] border border-white/5 text-center">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/20 mb-4">Support Identification</p>
-              <p className="text-[10px] font-mono text-white/40 break-all">{orderId}</p>
+            <div className="p-5 lg:p-8 rounded-3xl lg:rounded-[2.5rem] bg-white/[0.02] border border-white/5 text-center">
+              <p className="text-xs font-bold uppercase tracking-widest text-white/20 mb-4">
+                Support Identification
+              </p>
+
+              <p className="text-[10px] font-mono text-white/40 break-all">
+                {orderId}
+              </p>
             </div>
           </aside>
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-night flex items-center justify-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{
+              repeat: Infinity,
+              duration: 2,
+              ease: "linear",
+            }}
+            className="h-12 w-12 rounded-full border-2 border-neon-purple/20 border-t-neon-purple"
+          />
+        </div>
+      }
+    >
+      <SuccessContent />
+    </Suspense>
   );
 }
