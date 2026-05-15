@@ -93,39 +93,39 @@ export default function CheckoutPage() {
   );
 
   return (
-    <main className="min-h-screen bg-night pb-32">
+    <main className="min-h-screen bg-night pb-20 sm:pb-24 lg:pb-32">
       <Navbar />
       
-      <div className="mx-auto max-w-4xl px-8 pt-40">
-        <button onClick={() => router.back()} className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-white/30 hover:text-white transition mb-12 group">
+      <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 pt-28 sm:pt-32 lg:pt-40">
+        <button onClick={() => router.back()} className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-white/30 hover:text-white transition mb-12 group">
           <ArrowLeft size={16} className="transition group-hover:-translate-x-1" /> Back
         </button>
 
-        <div className="grid gap-12 lg:grid-cols-[1fr_0.8fr]">
+        <div className="grid gap-4 sm:p-5 lg:p-6 sm:gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:gap-5 sm:p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:p-12 lg:grid-cols-[1fr_0.8fr]">
           <div className="space-y-8">
-            <Card className="p-10" animate={false}>
-              <div className="flex items-center gap-4 mb-10 border-b border-white/5 pb-8">
-                <div className="h-12 w-12 rounded-2xl bg-neon-purple/10 flex items-center justify-center text-neon-purple border border-neon-purple/20">
+            <Card className="p-5 sm:p-7 lg:p-10" animate={false}>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center mb-6 sm:mb-8 lg:mb-10 border-b border-white/5 pb-8">
+                <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-2xl bg-neon-purple/10 flex items-center justify-center text-neon-purple border border-neon-purple/20">
                   <CreditCard size={24} />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-black text-white">Checkout</h1>
+                  <h1 className="text-2xl sm:text-3xl font-black text-white break-words">Checkout</h1>
                   <p className="text-sm text-white/40">Complete your payment for {event?.title}</p>
                 </div>
               </div>
 
               <div className="space-y-8">
-                <div className="flex flex-col gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
-                  <div className="flex flex-col md:flex-row gap-8">
-                    <div className="h-32 w-32 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
+                <div className="flex flex-col gap-4 sm:p-5 lg:p-6 p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                  <div className="flex flex-col md:flex-row gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8">
+                    <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
                       <img 
                         src={event?.imageUrl || event?.image || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30"} 
                         alt={event?.title}
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    <div className="flex-1 space-y-6">
-                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                    <div className="min-w-0 flex-1 space-y-5 sm:space-y-6">
+                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 sm:p-5 lg:p-6">
                         <div className="space-y-4">
                           <p className="text-[10px] font-bold uppercase tracking-widest text-neon-cyan">Select Ticket Type</p>
                           <div className="flex flex-wrap gap-3">
@@ -146,11 +146,11 @@ export default function CheckoutPage() {
                         </div>
                         <div className="text-right">
                           <p className="text-xs font-bold uppercase tracking-widest text-white/20 mb-1">Unit Price</p>
-                          <p className="text-2xl font-black text-white">₦{(selectedTier?.price || 0).toLocaleString()}</p>
+                          <p className="text-2xl font-black text-white break-words">₦{(selectedTier?.price || 0).toLocaleString()}</p>
                         </div>
                       </div>
 
-                      <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                      <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:p-5 lg:p-6">
                         <div>
                           <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3">Ticket Quantity</p>
                           <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-2 border border-white/10 w-fit">
@@ -178,9 +178,9 @@ export default function CheckoutPage() {
                   </div>
 
                   {event?.transportationAvailable && (
-                    <div className="pt-6 mt-6 border-t border-white/5 flex flex-col gap-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
+                    <div className="pt-6 mt-6 border-t border-white/5 flex flex-col gap-4 sm:p-5 lg:p-6">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                           <input 
                             type="checkbox" 
                             id="transport"
@@ -194,14 +194,14 @@ export default function CheckoutPage() {
                             }}
                           />
                           <label htmlFor="transport" className="cursor-pointer">
-                            <p className="text-sm font-black text-white">Add Transportation</p>
+                            <p className="text-sm font-black text-white break-words">Add Transportation</p>
                             <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">Transportation fee (₦{(event.transportationPrice || 0).toLocaleString()} per person)</p>
                           </label>
                         </div>
                       </div>
                       
                       {includeTransportation && (
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                           <div>
                             <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3">Transportation Quantity</p>
                             <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-2 border border-white/10 w-fit">
@@ -230,13 +230,13 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="p-6 rounded-3xl border border-emerald-500/10 bg-emerald-500/[0.02] flex flex-col items-center text-center">
+                <div className="grid grid-cols-2 gap-4 sm:p-5 lg:p-6">
+                  <div className="p-4 sm:p-5 lg:p-6 rounded-3xl border border-emerald-500/10 bg-emerald-500/[0.02] flex flex-col items-center text-center">
                     <ShieldCheck className="text-emerald-400 mb-3" size={24} />
                     <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Security</p>
                     <p className="text-sm font-bold mt-1 text-white">Secure SSL Payment</p>
                   </div>
-                  <div className="p-6 rounded-3xl border border-neon-purple/10 bg-neon-purple/[0.02] flex flex-col items-center text-center">
+                  <div className="p-4 sm:p-5 lg:p-6 rounded-3xl border border-neon-purple/10 bg-neon-purple/[0.02] flex flex-col items-center text-center">
                     <Lock className="text-neon-purple mb-3" size={24} />
                     <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Privacy</p>
                     <p className="text-sm font-bold mt-1 text-white">Privacy Protected</p>
@@ -258,27 +258,27 @@ export default function CheckoutPage() {
 
           <aside className="relative">
             <Card className="sticky top-32 space-y-10 bg-gradient-to-br from-neon-purple/10 to-transparent border-neon-purple/20" animate={false}>
-              <h2 className="text-2xl font-black text-white">Order Summary</h2>
+              <h2 className="text-2xl font-black text-white break-words">Order Summary</h2>
               
               <div className="space-y-5">
-                <div className="flex items-center justify-between text-sm">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between text-sm">
                   <span className="text-white/40 font-bold uppercase tracking-widest">Tickets ({currentQuantity})</span>
                   <span className="font-bold text-white">₦{baseAmount.toLocaleString()}</span>
                 </div>
                 {includeTransportation && (
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between text-sm">
                     <span className="text-white/40 font-bold uppercase tracking-widest">Transportation</span>
                     <span className="font-bold text-white">₦{transportAmount.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="flex items-center justify-between text-sm">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between text-sm">
                   <span className="text-white/40 font-bold uppercase tracking-widest">Fee</span>
                   <span className="text-emerald-400 font-bold">₦0.00</span>
                 </div>
                 <div className="pt-6 border-t border-white/10 flex items-center justify-between">
                   <span className="text-lg font-black uppercase tracking-widest text-white">Total</span>
                   <div className="text-right">
-                    <p className="text-4xl font-black text-neon-cyan">₦{totalAmount.toLocaleString()}</p>
+                    <p className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-black text-neon-cyan">₦{totalAmount.toLocaleString()}</p>
                   </div>
                 </div>
               </div>

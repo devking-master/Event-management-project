@@ -35,29 +35,29 @@ export default function SuccessPage() {
       <motion.div 
         animate={{ rotate: 360 }}
         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-        className="h-12 w-12 rounded-full border-2 border-neon-purple/20 border-t-neon-purple shadow-glow"
+        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full border-2 border-neon-purple/20 border-t-neon-purple shadow-glow"
       />
     </div>
   );
 
   return (
-    <main className="min-h-screen bg-night pb-32">
+    <main className="min-h-screen bg-night pb-20 sm:pb-24 lg:pb-32">
       <Navbar />
       
-      <div className="mx-auto max-w-4xl px-8 pt-40">
-        <div className="text-center mb-16">
+      <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 pt-28 sm:pt-32 lg:pt-40">
+        <div className="text-center mb-10 sm:mb-12 lg:mb-16">
           <motion.div 
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            className="mx-auto mb-8 grid h-24 w-24 place-items-center rounded-full bg-emerald-500/20 text-emerald-400 shadow-[0_0_50px_rgba(16,185,129,0.2)]"
+            className="mx-auto mb-8 grid h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 place-items-center rounded-full bg-emerald-500/20 text-emerald-400 shadow-[0_0_50px_rgba(16,185,129,0.2)]"
           >
             <CheckCircle2 size={48} />
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl font-black tracking-tight mb-4"
+            className="text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl font-black tracking-tight break-words mb-4"
           >
             Transmission <span className="text-emerald-400">Successful</span>
           </motion.h1>
@@ -71,12 +71,12 @@ export default function SuccessPage() {
           </motion.p>
         </div>
 
-        <div className="grid gap-12 lg:grid-cols-[1fr_0.7fr]">
+        <div className="grid gap-4 sm:p-5 lg:p-6 sm:gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:gap-5 sm:p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:p-12 lg:grid-cols-[1fr_0.7fr]">
           <div className="space-y-8">
             <Card className="p-0 overflow-hidden" animate={false}>
-              <div className="bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 p-8 border-b border-white/5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+              <div className="bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 border-b border-white/5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                     <Ticket className="text-white" size={24} />
                     <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/60">Digital Asset Pass</span>
                   </div>
@@ -84,10 +84,10 @@ export default function SuccessPage() {
                 </div>
               </div>
               
-              <div className="p-10 space-y-10">
+              <div className="p-5 sm:p-7 lg:p-10 space-y-10">
                 <div>
-                  <h2 className="text-3xl font-black mb-2">{order?.eventId?.title}</h2>
-                  <div className="flex flex-wrap gap-6 mt-4">
+                  <h2 className="text-2xl sm:text-3xl font-black mb-2">{order?.eventId?.title}</h2>
+                  <div className="flex flex-wrap gap-4 sm:p-5 lg:p-6 mt-4">
                     <div className="flex items-center gap-2 text-sm text-white/50">
                       <Calendar size={16} className="text-neon-purple" />
                       {order?.eventId?.date && new Date(order.eventId.date).toLocaleDateString()}
@@ -99,9 +99,9 @@ export default function SuccessPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-6">
+                <div className="grid gap-4 sm:p-5 lg:p-6">
                   {order?.tickets?.map((item: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-6 rounded-3xl bg-white/5 border border-white/10">
+                    <div key={i} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5 lg:p-6 rounded-3xl bg-white/5 border border-white/10">
                       <div>
                         <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">Access Level</p>
                         <p className="text-xl font-black text-neon-purple">{item.type}</p>
@@ -144,7 +144,7 @@ export default function SuccessPage() {
               </div>
             </Card>
 
-            <div className="p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 text-center">
+            <div className="p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 rounded-3xl lg:rounded-[2.5rem] bg-white/[0.02] border border-white/5 text-center">
               <p className="text-xs font-bold uppercase tracking-widest text-white/20 mb-4">Support Identification</p>
               <p className="text-[10px] font-mono text-white/40 break-all">{orderId}</p>
             </div>

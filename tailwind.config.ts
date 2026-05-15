@@ -8,6 +8,16 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        "xs": "380px",
+        "sm": "640px",
+        "md": "768px",
+        "lg": "1024px",
+        "xl": "1280px",
+        "2xl": "1536px",
+        "3xl": "1920px",
+        "touch": { "raw": "(hover: none) and (pointer: coarse)" },
+      },
       colors: {
         night: "#020205",
         ink: "#080812",
@@ -52,6 +62,11 @@ const config: Config = {
         "3xl": "1.5rem",
         "4xl": "2rem",
         "5xl": "2.5rem",
+      },
+      spacing: {
+        "touch-sm": "2.75rem",
+        "touch-md": "3rem",
+        "touch-lg": "3.5rem",
       },
     },
   },

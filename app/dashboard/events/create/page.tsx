@@ -118,35 +118,35 @@ export default function CreateEvent() {
   };
 
   return (
-    <div className="space-y-12 pb-20">
-      <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <div className="space-y-8 sm:space-y-10 lg:space-y-8 sm:space-y-10 lg:space-y-12 pb-16 sm:pb-20">
+      <header className="flex flex-col gap-4 sm:p-5 lg:p-6 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <button onClick={() => router.back()} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/30 hover:text-white transition mb-6 group">
             <ChevronLeft size={16} className="transition group-hover:-translate-x-1" /> Back to Events
           </button>
-          <h1 className="text-5xl font-black tracking-tight text-white">Create <span className="text-neon-purple">Event</span></h1>
+          <h1 className="text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl font-black tracking-tight break-words text-white">Create <span className="text-neon-purple">Event</span></h1>
           <p className="mt-2 text-lg text-white/40">Create a new event for your audience.</p>
         </div>
-        <div className="flex items-center gap-4 border-l border-white/5 pl-8">
+        <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 sm:border-l sm:pl-6">
           <Activity size={24} className="text-neon-purple animate-pulse" />
           <div className="flex flex-col">
             <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">System Status</span>
-            <span className="text-xs font-black text-white">Ready</span>
+            <span className="text-xs font-black text-white break-words">Ready</span>
           </div>
         </div>
       </header>
 
-      <form onSubmit={handleSubmit} className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+      <form onSubmit={handleSubmit} className="grid gap-4 sm:p-5 lg:p-6 sm:gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:gap-5 sm:p-7 lg:p-10 lg:grid-cols-[1.6fr_1fr]">
         <div className="space-y-10">
           <Card className="space-y-8" animate={false}>
-            <div className="flex items-center justify-between border-b border-white/5 pb-8">
-              <div className="flex items-center gap-4">
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-neon-purple/10 text-neon-purple">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-white/5 pb-8">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                <div className="grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-2xl bg-neon-purple/10 text-neon-purple">
                   <Info size={24} />
                 </div>
-                <h2 className="text-2xl font-black text-white">Event Information</h2>
+                <h2 className="text-2xl font-black text-white break-words">Event Information</h2>
               </div>
-              <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
+              <div className="flex flex-wrap items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Free Event</span>
                 <input 
                   type="checkbox" 
@@ -187,7 +187,7 @@ export default function CreateEvent() {
                 />
               </div>
 
-              <div className="grid gap-8 sm:grid-cols-2">
+              <div className="grid gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 sm:grid-cols-2">
                 <Input 
                   label="Event Date & Time"
                   type="datetime-local"
@@ -208,7 +208,7 @@ export default function CreateEvent() {
 
               <div className="pt-4 border-t border-white/5">
                 <h3 className="text-lg font-bold text-white mb-6">Event Duration</h3>
-                <div className="grid gap-8 sm:grid-cols-2">
+                <div className="grid gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 sm:grid-cols-2">
                   <Input 
                     label="Start Date & Time"
                     type="datetime-local"
@@ -229,12 +229,12 @@ export default function CreateEvent() {
           </Card>
 
           <Card className="space-y-8" animate={false}>
-            <div className="flex items-center justify-between border-b border-white/5 pb-8">
-              <div className="flex items-center gap-4">
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-neon-cyan/10 text-neon-cyan">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-white/5 pb-8">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                <div className="grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-2xl bg-neon-cyan/10 text-neon-cyan">
                   <Layers size={24} />
                 </div>
-                <h2 className="text-2xl font-black text-white">Tickets & Pricing</h2>
+                <h2 className="text-2xl font-black text-white break-words">Tickets & Pricing</h2>
               </div>
               {!form.isFree && (
                 <Button type="button" variant="ghost" size="sm" icon={Plus} onClick={addTicketType}>
@@ -249,7 +249,7 @@ export default function CreateEvent() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   key={index} 
-                  className="grid gap-6 p-6 rounded-3xl bg-white/[0.02] border border-white/5 items-end sm:grid-cols-[1.2fr_1fr_1fr_auto]"
+                  className="grid gap-4 sm:p-5 lg:p-6 p-4 sm:p-5 lg:p-6 rounded-3xl bg-white/[0.02] border border-white/5 items-end sm:grid-cols-[1.2fr_1fr_1fr_auto]"
                 >
                   <Select 
                     label="Ticket Type"
@@ -279,7 +279,7 @@ export default function CreateEvent() {
                     <button 
                       type="button"
                       onClick={() => removeTicketType(index)}
-                      className="h-14 w-14 grid place-items-center text-rose-500 hover:bg-rose-500/10 rounded-2xl transition"
+                      className="h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 grid place-items-center text-rose-500 hover:bg-rose-500/10 rounded-2xl transition"
                     >
                       <Trash2 size={20} />
                     </button>
@@ -291,16 +291,16 @@ export default function CreateEvent() {
 
           <Card className="space-y-8" animate={false}>
             <div className="flex items-center gap-4 border-b border-white/5 pb-8">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-400">
+              <div className="grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-400">
                 <Truck size={24} />
               </div>
-              <h2 className="text-2xl font-black text-white">Transportation</h2>
+              <h2 className="text-2xl font-black text-white break-words">Transportation</h2>
             </div>
 
-            <div className="space-y-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-neon-purple/10 flex items-center justify-center text-neon-purple">
+            <div className="space-y-6 p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                  <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-neon-purple/10 flex items-center justify-center text-neon-purple">
                     <Truck size={20} />
                   </div>
                   <div>
@@ -324,10 +324,10 @@ export default function CreateEvent() {
                     exit={{ height: 0, opacity: 0 }} 
                     className="overflow-hidden pt-6 space-y-6 border-t border-white/5"
                   >
-                    <div className="grid gap-6 sm:grid-cols-2">
+                    <div className="grid gap-4 sm:p-5 lg:p-6 sm:grid-cols-2">
                       <div className="flex flex-col gap-2">
                         <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Free Transportation</label>
-                        <div className="flex items-center justify-between h-14 bg-white/5 rounded-2xl border border-white/5 px-4">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between h-14 bg-white/5 rounded-2xl border border-white/5 px-4">
                           <span className="text-xs font-bold text-white/50">Complimentary for guests</span>
                           <input 
                             type="checkbox" 
@@ -379,8 +379,8 @@ export default function CreateEvent() {
                   </button>
                 </div>
               ) : (
-                <label className="flex h-full flex-col items-center justify-center p-8 text-center cursor-pointer">
-                  <div className="mb-4 grid h-16 w-16 place-items-center rounded-2xl bg-white/5 text-white/10 group-hover:bg-neon-purple/20 group-hover:text-neon-purple transition-all">
+                <label className="flex h-full flex-col items-center justify-center p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 text-center cursor-pointer">
+                  <div className="mb-4 grid h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 place-items-center rounded-2xl bg-white/5 text-white/10 group-hover:bg-neon-purple/20 group-hover:text-neon-purple transition-all">
                     <Upload size={32} />
                   </div>
                   <p className="text-sm font-medium text-white/20 group-hover:text-white/40 transition">Drop image or click to select</p>

@@ -44,10 +44,10 @@ export default function EventsList() {
   }, []);
 
   return (
-    <div className="space-y-12 pb-20">
-      <header className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+    <div className="space-y-8 sm:space-y-10 lg:space-y-8 sm:space-y-10 lg:space-y-12 pb-16 sm:pb-20">
+      <header className="flex flex-col gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-5xl font-black tracking-tight">Active <span className="text-neon-cyan">Events</span></h1>
+          <h1 className="text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl font-black tracking-tight break-words">Active <span className="text-neon-cyan">Events</span></h1>
           <p className="mt-2 text-lg text-white/40">Manage your events and monitor live ticket sales.</p>
         </div>
         <Link href="/dashboard/events/create">
@@ -59,33 +59,33 @@ export default function EventsList() {
         <div className="relative flex-1">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={20} />
           <input 
-            className="w-full rounded-[1.8rem] border border-white/5 bg-white/5 p-5 pl-14 outline-none focus:border-neon-cyan/50 focus:bg-white/[0.08] transition-all placeholder:text-white/20 font-medium"
+            className="w-full rounded-2xl lg:rounded-[1.8rem] border border-white/5 bg-white/5 p-4 sm:p-5 pl-12 sm:pl-14 outline-none focus:border-neon-cyan/50 focus:bg-white/[0.08] transition-all placeholder:text-white/20 font-medium"
             placeholder="Search by event name or category..."
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <Button variant="secondary" icon={Filter}>Filters</Button>
-          <div className="hidden h-14 w-[1px] bg-white/5 lg:block" />
-          <div className="flex items-center gap-3 px-4">
+          <div className="hidden h-14 w-px bg-white/5 lg:block" />
+          <div className="flex flex-wrap items-center gap-3 px-4">
             <Activity size={18} className="text-emerald-400" />
             <span className="text-xs font-bold uppercase tracking-widest text-white/40">Network Stable</span>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {loading ? (
             [1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[550px] animate-pulse rounded-[2.5rem] bg-white/5 border border-white/10" />
+              <div key={i} className="min-h-[420px] sm:min-h-[500px] lg:min-h-[550px] animate-pulse rounded-3xl lg:rounded-[2.5rem] bg-white/5 border border-white/10" />
             ))
           ) : events.length === 0 ? (
-            <div className="col-span-full py-40 text-center">
+            <div className="col-span-full py-20 sm:py-28 lg:py-40 text-center">
               <div className="mx-auto flex flex-col items-center max-w-sm">
-                <div className="mb-6 grid h-20 w-20 place-items-center rounded-3xl bg-white/5 text-white/20">
+                <div className="mb-6 grid h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 sm:h-20 sm:w-20 place-items-center rounded-3xl bg-white/5 text-white/20">
                   <CalendarIcon size={40} />
                 </div>
-                <h3 className="text-2xl font-black text-white/40">No Events Found</h3>
+                <h3 className="text-2xl font-black text-white break-words/40">No Events Found</h3>
                 <p className="mt-2 text-sm text-white/20">You haven't created any events yet. Create a new event to begin.</p>
                 <Link href="/dashboard/events/create" className="mt-8">
                   <Button variant="outline">Create Event</Button>
@@ -103,7 +103,7 @@ export default function EventsList() {
               >
                 <Card className="flex flex-col h-full p-0 overflow-hidden border-white/5 hover:border-neon-cyan/30 transition-all duration-500" animate={false}>
                   {/* Image Section */}
-                  <div className="relative h-56 w-full overflow-hidden shrink-0">
+                  <div className="relative h-48 sm:h-56 w-full overflow-hidden shrink-0">
                     {event.imageUrl || event.image ? (
                         <Image 
                           src={event.imageUrl || event.image} 
@@ -113,7 +113,7 @@ export default function EventsList() {
                           className="object-cover transition duration-700 group-hover:scale-110" 
                         />
                     ) : (
-                      <div className="h-full w-full bg-gradient-to-br from-neon-purple/20 to-neon-cyan/20 flex items-center justify-center font-black text-white/10">
+                      <div className="h-full w-full bg-gradient-to-br from-neon-purple/20 to-neon-cyan/20 flex items-center justify-center font-black text-white break-words/10">
                         <CalendarIcon size={48} className="opacity-20" />
                       </div>
                     )}
@@ -145,7 +145,7 @@ export default function EventsList() {
                   </div>
 
                   {/* Content Section */}
-                  <div className="flex flex-col flex-1 p-8 space-y-6">
+                  <div className="flex flex-col flex-1 p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 space-y-6">
                     <div className="flex-1">
                       <h3 className="text-2xl font-black group-hover:text-neon-cyan transition truncate">{event.title}</h3>
                       <div className="flex flex-wrap gap-4 mt-3">

@@ -50,22 +50,22 @@ export default function SignupPage() {
       <div className="absolute top-1/4 right-1/4 h-96 w-96 bg-neon-cyan/10 blur-[120px] rounded-full" />
       <div className="absolute bottom-1/4 left-1/4 h-96 w-96 bg-neon-purple/10 blur-[120px] rounded-full" />
 
-      <div className="relative z-10 w-full max-w-xl py-20">
-        <Link href="/" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/30 hover:text-white transition mb-10 group">
+      <div className="relative z-10 w-full max-w-xl py-10 sm:py-16 lg:py-20">
+        <Link href="/" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/30 hover:text-white transition mb-6 sm:mb-10 group">
           <ArrowLeft size={16} className="transition group-hover:-translate-x-1" /> Back to Home
         </Link>
 
-        <Card className="p-12 shadow-glow-cyan" animate={true}>
+        <Card className="p-5 sm:p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:p-12 shadow-glow-cyan" animate={true}>
           <div className="text-center mb-12">
-            <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-2xl bg-neon-cyan shadow-glow-cyan">
+            <div className="mx-auto mb-6 grid h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 place-items-center rounded-2xl bg-neon-cyan shadow-glow-cyan">
               <UserPlus size={32} className="text-white" />
             </div>
-            <h1 className="text-4xl font-black tracking-tight text-white">Create Account</h1>
+            <h1 className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight break-words text-white">Create Account</h1>
             <p className="mt-3 text-white/40 font-medium italic">Join EventFlow today.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex gap-4 p-1 rounded-2xl bg-white/5 border border-white/10 mb-8">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-1 rounded-2xl bg-white/5 border border-white/10 mb-8">
               <button
                 type="button"
                 onClick={() => setForm({...form, role: "user"})}
@@ -146,7 +146,7 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-6 opacity-20">
+          <div className="mt-8 flex items-center justify-center gap-4 sm:p-5 lg:p-6 opacity-20">
             <ShieldCheck size={18} />
             <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Identity Encrypted</span>
           </div>

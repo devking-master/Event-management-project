@@ -115,3 +115,64 @@ select {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+
+/* Responsive + mobile safety improvements */
+@layer utilities {
+  .safe-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .responsive-card-padding {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+
+  .responsive-title {
+    @apply text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight break-words;
+  }
+
+  .responsive-subtitle {
+    @apply text-sm sm:text-base lg:text-lg text-white/45 leading-relaxed;
+  }
+
+  .dashboard-grid {
+    @apply grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3;
+  }
+}
+
+/* Touch and small screen behavior: no nested @apply here */
+@media (hover: none) and (pointer: coarse) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  input,
+  textarea,
+  select,
+  button,
+  a {
+    min-height: 44px;
+  }
+
+  button:active,
+  a:active {
+    opacity: 0.82;
+    transition: opacity 120ms ease;
+  }
+}
+
+@media (max-width: 640px) {
+  .glass,
+  .glass-dark {
+    backdrop-filter: blur(14px);
+  }
+
+  table {
+    min-width: 720px;
+  }
+
+  .cyber-card {
+    clip-path: none;
+    border-radius: 1.5rem;
+  }
+}

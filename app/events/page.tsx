@@ -50,11 +50,11 @@ export default function ExploreEvents() {
   };
 
   return (
-    <main className="min-h-screen bg-night pb-32">
+    <main className="min-h-screen bg-night pb-20 sm:pb-24 lg:pb-32">
       <Navbar />
       
       {/* Immersive Header */}
-      <section className="relative px-5 pt-40 pb-24 overflow-hidden">
+      <section className="relative px-5 pt-28 sm:pt-32 lg:pt-40 pb-24 overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern bg-[length:60px_60px] opacity-10" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-full max-w-6xl bg-neon-purple/5 blur-[120px] rounded-full" />
         
@@ -72,7 +72,7 @@ export default function ExploreEvents() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-6xl font-black md:text-8xl lg:text-9xl tracking-tighter"
+            className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl font-black md:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-8xl lg:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-8xl xl:text-9xl tracking-tighter"
           >
             Explore <span className="text-neon-purple text-glow">Events</span>
           </motion.h1>
@@ -81,23 +81,23 @@ export default function ExploreEvents() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-16 mx-auto max-w-4xl"
+            className="mt-10 sm:mt-12 lg:mt-16 mx-auto max-w-4xl"
           >
-            <div className="flex flex-col gap-4 p-4 rounded-[2.5rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl lg:flex-row shadow-2xl">
-              <div className="flex-[2] relative group">
+            <div className="flex flex-col gap-4 p-4 rounded-3xl lg:rounded-[2.5rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl lg:flex-row shadow-2xl">
+              <div className="relative min-w-0 flex-[2] group">
                 <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-neon-purple transition-colors" size={22} />
                 <input 
-                  className="w-full h-16 rounded-3xl border border-white/5 bg-white/5 pl-16 pr-6 outline-none focus:border-neon-purple/30 transition-all text-lg font-medium"
+                  className="w-full h-14 sm:h-16 rounded-2xl sm:rounded-3xl border border-white/5 bg-white/5 pl-16 pr-6 outline-none focus:border-neon-purple/30 transition-all text-lg font-medium"
                   placeholder="Search for events..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && fetchEvents()}
                 />
               </div>
-              <div className="flex-1 relative group">
+              <div className="relative min-w-0 flex-1 group">
                 <Tag className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-neon-cyan transition-colors" size={22} />
                 <select 
-                  className="w-full h-16 rounded-3xl border border-white/5 bg-white/5 pl-16 pr-10 outline-none focus:border-neon-cyan/30 transition-all appearance-none text-white/60 font-medium cursor-pointer"
+                  className="w-full h-14 sm:h-16 rounded-2xl sm:rounded-3xl border border-white/5 bg-white/5 pl-16 pr-10 outline-none focus:border-neon-cyan/30 transition-all appearance-none text-white/60 font-medium cursor-pointer"
                   value={category}
                   onChange={e => setCategory(e.target.value)}
                 >
@@ -131,10 +131,10 @@ export default function ExploreEvents() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="grid gap-10 md:grid-cols-2 lg:grid-cols-3"
+                className="grid gap-4 sm:p-5 lg:p-6 sm:gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:gap-5 sm:p-7 lg:p-10 md:grid-cols-2 lg:grid-cols-3"
               >
                 {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="h-[500px] w-full animate-pulse rounded-[3rem] bg-white/[0.03] border border-white/5" />
+                  <div key={i} className="h-[500px] w-full animate-pulse rounded-3xl lg:rounded-[3rem] bg-white/[0.03] border border-white/5" />
                 ))}
               </motion.div>
             ) : events.length === 0 ? (
@@ -145,7 +145,7 @@ export default function ExploreEvents() {
                 className="py-32 text-center"
               >
                 <Activity size={80} className="mx-auto text-white/10 mb-8" strokeWidth={1} />
-                <h3 className="text-3xl font-black text-white/40">No events found</h3>
+                <h3 className="text-2xl sm:text-3xl font-black text-white break-words/40">No events found</h3>
                 <p className="mt-4 text-white/20 max-w-md mx-auto">Try adjusting your search or category filters.</p>
                 <Button variant="ghost" className="mt-10" onClick={() => {setSearch(""); setCategory(""); fetchEvents();}}>Reset Filters</Button>
               </motion.div>
@@ -155,13 +155,13 @@ export default function ExploreEvents() {
                 variants={container}
                 initial="hidden"
                 animate="show"
-                className="grid gap-10 md:grid-cols-2 lg:grid-cols-3"
+                className="grid gap-4 sm:p-5 lg:p-6 sm:gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:gap-5 sm:p-7 lg:p-10 md:grid-cols-2 lg:grid-cols-3"
               >
                 {events.map((event: any) => (
                   <motion.div variants={item} key={event._id}>
                     <Link 
                       href={`/events/${event._id}`} 
-                      className="group relative block h-[550px] overflow-hidden rounded-[3rem] border border-white/10 bg-ink transition-all hover:border-neon-purple/50 hover:shadow-glow"
+                      className="group relative block min-h-[420px] sm:min-h-[500px] lg:min-h-[550px] overflow-hidden rounded-3xl lg:rounded-[3rem] border border-white/10 bg-ink transition-all hover:border-neon-purple/50 hover:shadow-glow"
                     >
                       {/* Image Layer */}
                       <div className="absolute inset-0">
@@ -174,27 +174,27 @@ export default function ExploreEvents() {
                       </div>
                       
                       {/* Badge */}
-                      <div className="absolute top-8 right-8 z-20 rounded-2xl bg-black/60 backdrop-blur-xl px-5 py-3 border border-white/10 shadow-2xl">
+                      <div className="absolute top-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 right-8 z-20 rounded-2xl bg-black/60 backdrop-blur-xl px-5 py-3 border border-white/10 shadow-2xl">
                         <p className="text-xs font-bold uppercase tracking-widest text-white/40 mb-1">Starting From</p>
                         <p className="text-2xl font-black text-neon-cyan">₦{event.ticketTypes[0]?.price?.toLocaleString() || 0}</p>
                       </div>
 
                       {/* Content Layer */}
-                      <div className="absolute inset-0 z-10 flex flex-col justify-end p-10">
-                        <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-neon-purple mb-4">
+                      <div className="absolute inset-0 z-10 flex flex-col justify-end p-5 sm:p-7 lg:p-10">
+                        <div className="flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-neon-purple mb-4">
                           <span>{event.category}</span>
                           <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
                           <span>{new Date(event.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}</span>
                         </div>
                         
-                        <h3 className="text-4xl font-black leading-tight text-white group-hover:text-neon-purple transition-colors mb-6">{event.title}</h3>
+                        <h3 className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-black leading-tight text-white group-hover:text-neon-purple transition-colors mb-6">{event.title}</h3>
                         
-                        <div className="flex items-center gap-6 border-t border-white/10 pt-8 mt-4 transition-transform group-hover:translate-y-[-10px]">
+                        <div className="flex items-center gap-4 sm:p-5 lg:p-6 border-t border-white/10 pt-8 mt-4 transition-transform group-hover:translate-y-[-10px]">
                           <div className="flex items-center gap-2 text-sm font-medium text-white/50">
                             <MapPin size={16} className="text-neon-cyan" /> {event.location}
                           </div>
                           <div className="flex-1" />
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 border border-white/10 text-white group-hover:bg-neon-purple group-hover:border-neon-purple transition-all duration-500">
+                          <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/5 border border-white/10 text-white group-hover:bg-neon-purple group-hover:border-neon-purple transition-all duration-500">
                             <ArrowRight size={20} />
                           </div>
                         </div>
@@ -202,7 +202,7 @@ export default function ExploreEvents() {
 
                       {/* Hover Overlay HUD */}
                       <div className="absolute inset-0 pointer-events-none border-[12px] border-transparent transition-all duration-500 group-hover:border-white/5" />
-                      <div className="absolute top-6 left-6 h-10 w-10 border-t-2 border-l-2 border-white/0 transition-all duration-500 group-hover:border-neon-purple/40" />
+                      <div className="absolute top-4 sm:p-5 lg:p-6 left-6 h-10 w-10 border-t-2 border-l-2 border-white/0 transition-all duration-500 group-hover:border-neon-purple/40" />
                       <div className="absolute bottom-6 right-6 h-10 w-10 border-b-2 border-r-2 border-white/0 transition-all duration-500 group-hover:border-neon-purple/40" />
                     </Link>
                   </motion.div>

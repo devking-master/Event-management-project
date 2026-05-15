@@ -42,7 +42,7 @@ export default function ProfileSettings() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <Card className="space-y-8" animate={false}>
         <div className="flex items-center gap-4 border-b border-white/5 pb-8">
-          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-neon-purple/10 text-neon-purple">
+          <div className="grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-2xl bg-neon-purple/10 text-neon-purple">
             <User size={24} />
           </div>
           <div>
@@ -52,7 +52,7 @@ export default function ProfileSettings() {
         </div>
 
         <form onSubmit={handleUpdate} className="space-y-8 pt-4">
-          <div className="grid gap-8 sm:grid-cols-2">
+          <div className="grid gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 sm:grid-cols-2">
             <Input 
               label="Full Name"
               icon={User}
@@ -78,8 +78,8 @@ export default function ProfileSettings() {
       </Card>
 
       <Card className="border-rose-500/20 bg-rose-500/[0.02]" animate={false}>
-        <div className="flex items-start gap-6">
-          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-rose-500/10 text-rose-500 flex-shrink-0">
+        <div className="flex items-start gap-4 sm:p-5 lg:p-6">
+          <div className="grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-2xl bg-rose-500/10 text-rose-500 flex-shrink-0">
             <Shield size={24} />
           </div>
           <div className="space-y-4">

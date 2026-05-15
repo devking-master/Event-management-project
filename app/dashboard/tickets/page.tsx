@@ -26,13 +26,13 @@ export default function MyTickets() {
   }, []);
 
   return (
-    <div className="space-y-12 pb-20">
-      <header className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+    <div className="space-y-8 sm:space-y-10 lg:space-y-8 sm:space-y-10 lg:space-y-12 pb-16 sm:pb-20">
+      <header className="flex flex-col gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-5xl font-black tracking-tight">My <span className="text-neon-purple">Tickets</span></h1>
+          <h1 className="text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl font-black tracking-tight break-words">My <span className="text-neon-purple">Tickets</span></h1>
           <p className="mt-2 text-lg text-white/40">Your tickets for upcoming events.</p>
         </div>
-        <div className="flex items-center gap-4 border-l border-white/5 pl-8">
+        <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 sm:border-l sm:pl-6">
           <Activity size={24} className="text-neon-purple animate-pulse" />
           <div className="flex flex-col">
             <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Ticket Status</span>
@@ -45,23 +45,23 @@ export default function MyTickets() {
         <div className="relative flex-1">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={20} />
           <input 
-            className="w-full rounded-[1.8rem] border border-white/5 bg-white/5 p-5 pl-14 outline-none focus:border-neon-purple/50 focus:bg-white/[0.08] transition-all placeholder:text-white/20 font-medium"
+            className="w-full rounded-2xl lg:rounded-[1.8rem] border border-white/5 bg-white/5 p-4 sm:p-5 pl-12 sm:pl-14 outline-none focus:border-neon-purple/50 focus:bg-white/[0.08] transition-all placeholder:text-white/20 font-medium"
             placeholder="Search by event or ticket code..."
           />
         </div>
         <Button variant="secondary" icon={Filter}>Filter</Button>
       </div>
 
-      <div className="grid gap-10 md:grid-cols-2">
+      <div className="grid gap-4 sm:p-5 lg:p-6 sm:gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:gap-5 sm:p-7 lg:p-10 md:grid-cols-2">
         <AnimatePresence mode="popLayout">
           {loading ? (
             [1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-[350px] w-full animate-pulse rounded-[3rem] bg-white/5 border border-white/10" />
+              <div key={i} className="min-h-[300px] sm:min-h-[350px] w-full animate-pulse rounded-3xl lg:rounded-[3rem] bg-white/5 border border-white/10" />
             ))
           ) : tickets.length === 0 ? (
-            <div className="col-span-full py-40 text-center">
+            <div className="col-span-full py-20 sm:py-28 lg:py-40 text-center">
               <TicketIcon size={80} className="mx-auto text-white/10 mb-8" strokeWidth={1} />
-              <h3 className="text-3xl font-black text-white/40">No Tickets Found</h3>
+              <h3 className="text-2xl sm:text-3xl font-black text-white break-words/40">No Tickets Found</h3>
               <p className="mt-4 text-white/20 max-w-md mx-auto">You haven't purchased any tickets yet. Explore events to discover upcoming ones.</p>
               <Button variant="ghost" className="mt-10" onClick={() => window.location.href = "/events"}>Explore Events</Button>
             </div>
@@ -74,19 +74,19 @@ export default function MyTickets() {
                 key={ticket._id}
               >
                 <Card className="p-0 overflow-hidden group border-white/10 hover:border-neon-purple/50 transition-all duration-500" animate={false}>
-                  <div className="relative h-48 w-full overflow-hidden">
+                  <div className="relative h-44 sm:h-48 w-full overflow-hidden">
                     <img 
                       src={ticket.eventId?.image || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30"} 
                       alt="" 
                       className="h-full w-full object-cover transition duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
-                    <div className="absolute top-6 right-6 px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-emerald-400">
+                    <div className="absolute top-4 sm:p-5 lg:p-6 right-6 px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-emerald-400">
                       Verified Ticket
                     </div>
                   </div>
 
-                  <div className="p-8">
+                  <div className="p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8">
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="text-2xl font-black group-hover:text-neon-purple transition">{ticket.eventId?.title}</h3>
@@ -101,7 +101,7 @@ export default function MyTickets() {
                           </div>
                         </div>
                       </div>
-                      <div className="h-16 w-16 bg-white rounded-2xl p-2 flex items-center justify-center">
+                      <div className="h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 bg-white rounded-2xl p-2 flex items-center justify-center">
                         <QrCode size={40} className="text-ink" />
                       </div>
                     </div>

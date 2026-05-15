@@ -1,12 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { LucideIcon, ChevronDown } from "lucide-react";
+import { ChevronDown, type LucideIcon } from "lucide-react";
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   icon?: LucideIcon;
   error?: string;
+  helper?: string;
   options: { label: string; value: string | number }[];
 }
 
@@ -14,38 +14,47 @@ export default function Select({
   label,
   icon: Icon,
   error,
+  helper,
   options,
   className = "",
   ...props
 }: SelectProps) {
   return (
-    <div className="space-y-2">
+    <div className="min-w-0 space-y-2">
       {label && (
-        <label className="ml-1 text-xs font-bold uppercase tracking-[0.2em] text-white/40">
+        <label className="ml-1 block text-[11px] font-black uppercase tracking-[0.18em] text-white/45 sm:text-xs sm:tracking-[0.22em]">
           {label}
         </label>
       )}
-      <div className="relative group">
+
+      <div className="group relative">
         {Icon && (
-          <Icon className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 transition-colors group-focus-within:text-neon-purple" size={18} />
+          <Icon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/25 transition-colors group-focus-within:text-neon-purple sm:left-5 sm:h-[18px] sm:w-[18px]" />
         )}
+
         <select
-          className={`w-full rounded-2xl border border-white/10 bg-night p-4 outline-none transition-all appearance-none cursor-pointer focus:border-neon-purple/50 focus:bg-white/[0.08] focus:shadow-glow ${
-            Icon ? "pl-14" : "pl-5"
-          } pr-12 text-white ${error ? "border-rose-500/50" : ""} ${className}`}
+          className={[
+            "w-full min-h-11 appearance-none rounded-xl border border-white/10 bg-[#05050b] px-4 py-3 pr-11 text-sm text-white outline-none transition-all",
+            "focus:border-neon-purple/50 focus:bg-[#090914] focus:shadow-glow sm:min-h-12 sm:rounded-2xl sm:text-base",
+            "touch:min-h-12",
+            Icon ? "pl-11 sm:pl-14" : "",
+            error ? "border-rose-500/50 focus:border-rose-500/70" : "",
+            className,
+          ].join(" ")}
           {...props}
         >
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value} className="bg-night text-white py-2">
+            <option key={opt.value} value={opt.value} className="bg-[#05050b] text-white">
               {opt.label}
             </option>
           ))}
         </select>
-        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-white/20 group-focus-within:text-neon-purple transition-colors">
-          <ChevronDown size={18} />
-        </div>
+
+        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/25 transition-colors group-focus-within:text-neon-purple sm:right-5" />
       </div>
-      {error && <p className="ml-1 text-xs font-bold text-rose-400">{error}</p>}
+
+      {helper && !error && <p className="ml-1 text-xs leading-5 text-white/35">{helper}</p>}
+      {error && <p className="ml-1 text-xs font-bold leading-5 text-rose-400">{error}</p>}
     </div>
   );
 }

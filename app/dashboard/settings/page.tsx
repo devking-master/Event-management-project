@@ -21,10 +21,10 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="p-8" animate={false}>
-          <div className="flex items-center gap-6 mb-8">
-            <div className="h-20 w-20 rounded-[2rem] bg-neon-purple/10 flex items-center justify-center text-neon-purple border border-neon-purple/20">
+      <div className="grid gap-4 sm:p-5 lg:p-6 md:grid-cols-2">
+        <Card className="p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8" animate={false}>
+          <div className="flex items-center gap-4 sm:p-5 lg:p-6 mb-8">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-neon-purple/10 flex items-center justify-center text-neon-purple border border-neon-purple/20">
               <User size={40} />
             </div>
             <div>
@@ -34,15 +34,15 @@ export default function SettingsPage() {
           </div>
           
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+              <div className="flex flex-wrap items-center gap-3">
                 <Shield size={18} className="text-neon-cyan" />
                 <span className="text-sm font-bold">Access Level</span>
               </div>
               <span className="text-xs font-black uppercase tracking-widest text-white/60">{user?.role}</span>
             </div>
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+              <div className="flex flex-wrap items-center gap-3">
                 <Activity size={18} className="text-emerald-400" />
                 <span className="text-sm font-bold">Account Status</span>
               </div>
@@ -51,7 +51,7 @@ export default function SettingsPage() {
           </div>
         </Card>
 
-        <Card className="p-8 bg-rose-500/5 border-rose-500/20" animate={false}>
+        <Card className="p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 bg-rose-500/5 border-rose-500/20" animate={false}>
           <h3 className="text-xl font-black mb-4">Sign Out</h3>
           <p className="text-white/40 text-sm mb-8 leading-relaxed">
             Sign out of your account. You will need to log in again to access the dashboard.
@@ -67,7 +67,7 @@ export default function SettingsPage() {
         </Card>
       </div>
 
-      <Card className="p-8" animate={false}>
+      <Card className="p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8" animate={false}>
         <h3 className="text-xl font-black mb-6">Quick Actions</h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[

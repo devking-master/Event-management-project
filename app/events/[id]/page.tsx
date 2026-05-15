@@ -52,7 +52,7 @@ export default function EventDetails() {
       <motion.div 
         animate={{ rotate: 360 }}
         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-        className="h-20 w-20 rounded-full border-2 border-neon-purple/20 border-t-neon-purple shadow-glow mb-8"
+        className="h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 sm:h-20 sm:w-20 rounded-full border-2 border-neon-purple/20 border-t-neon-purple shadow-glow mb-8"
       />
       <p className="text-xs font-bold uppercase tracking-[0.4em] text-white/30 animate-pulse">Loading event details...</p>
     </div>
@@ -65,11 +65,11 @@ export default function EventDetails() {
   );
 
   return (
-    <main className="min-h-screen bg-night pb-32">
+    <main className="min-h-screen bg-night pb-20 sm:pb-24 lg:pb-32">
       <Navbar />
 
       {/* Cinematic Hero */}
-      <div className="relative h-[80vh] w-full overflow-hidden">
+      <div className="relative min-h-[560px] h-[70vh] w-full overflow-hidden">
         <motion.img 
           initial={{ scale: 1.1, opacity: 0 }}
           animate={{ scale: 1, opacity: 0.6 }}
@@ -83,13 +83,13 @@ export default function EventDetails() {
         
         {/* HUD Elements Overlay */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-40 left-10 h-32 w-[1px] bg-gradient-to-b from-neon-purple to-transparent opacity-40" />
+          <div className="absolute top-40 left-10 h-32 w-px bg-gradient-to-b from-neon-purple to-transparent opacity-40" />
           <div className="absolute top-40 left-10 w-20 h-[1px] bg-gradient-to-r from-neon-purple to-transparent opacity-40" />
-          <div className="absolute bottom-40 right-10 h-32 w-[1px] bg-gradient-to-t from-neon-cyan to-transparent opacity-40" />
+          <div className="absolute bottom-40 right-10 h-32 w-px bg-gradient-to-t from-neon-cyan to-transparent opacity-40" />
           <div className="absolute bottom-40 right-10 w-20 h-[1px] bg-gradient-to-l from-neon-cyan to-transparent opacity-40" />
         </div>
 
-        <div className="absolute bottom-20 left-0 w-full px-8">
+        <div className="absolute bottom-10 sm:bottom-14 lg:bottom-20 left-0 w-full px-5 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
@@ -108,7 +108,7 @@ export default function EventDetails() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="text-7xl font-black md:text-9xl lg:text-[10rem] leading-[0.85] tracking-tighter"
+              className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl font-black md:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-8xl xl:text-9xl lg:text-[10rem] leading-[0.85] tracking-tighter"
             >
               {event.title}
             </motion.h1>
@@ -116,49 +116,49 @@ export default function EventDetails() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-8 mt-24 grid gap-16 lg:grid-cols-[1.6fr_1fr]">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 mt-12 sm:mt-16 lg:mt-24 grid gap-16 lg:grid-cols-[1.6fr_1fr]">
         <div className="space-y-20">
           <section className="space-y-10">
-            <div className="flex items-center gap-6">
-              <div className="h-14 w-14 rounded-2xl bg-neon-purple/10 flex items-center justify-center text-neon-purple border border-neon-purple/20">
+            <div className="flex items-center gap-4 sm:p-5 lg:p-6">
+              <div className="h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 rounded-2xl bg-neon-purple/10 flex items-center justify-center text-neon-purple border border-neon-purple/20">
                 <Activity size={28} />
               </div>
-              <h2 className="text-4xl font-black text-white">Event Information</h2>
+              <h2 className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-black text-white break-words">Event Information</h2>
             </div>
             
-            <Card className="p-12" animate={false}>
+            <Card className="p-5 sm:p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:p-12" animate={false}>
               <p className="text-xl leading-relaxed text-white/60 whitespace-pre-line font-medium italic border-l-4 border-neon-purple pl-8">
                 {event.description || "System logs empty. No description provided for this production."}
               </p>
 
-              <div className="mt-16 grid gap-8 sm:grid-cols-2">
-                <div className="group relative rounded-[2rem] bg-white/[0.03] p-8 border border-white/5 transition-all hover:bg-white/[0.06] hover:border-white/10">
+              <div className="mt-10 sm:mt-12 lg:mt-16 grid gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 sm:grid-cols-2">
+                <div className="group relative rounded-[2rem] bg-white/[0.03] p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 border border-white/5 transition-all hover:bg-white/[0.06] hover:border-white/10">
                   <MapPin className="text-neon-cyan mb-6" size={32} />
                   <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-1">Location</p>
-                  <p className="text-2xl font-black text-white">{event.location}</p>
+                  <p className="text-2xl font-black text-white break-words">{event.location}</p>
                 </div>
-                <div className="group relative rounded-[2rem] bg-white/[0.03] p-8 border border-white/5 transition-all hover:bg-white/[0.06] hover:border-white/10">
+                <div className="group relative rounded-[2rem] bg-white/[0.03] p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 border border-white/5 transition-all hover:bg-white/[0.06] hover:border-white/10">
                   <Calendar className="text-neon-purple mb-6" size={32} />
                   <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-1">Date & Time</p>
-                  <p className="text-2xl font-black text-white">{new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                  <p className="text-2xl font-black text-white break-words">{new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                 </div>
               </div>
             </Card>
           </section>
 
           <section className="space-y-10">
-            <h2 className="text-3xl font-black flex items-center gap-4 text-white">
+            <h2 className="text-2xl sm:text-3xl font-black flex items-center gap-4 text-white">
               <Zap className="text-neon-cyan" size={24} /> 
               What to Expect
             </h2>
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="grid gap-4 sm:p-5 lg:p-6 sm:grid-cols-2">
               {[
                 { icon: ShieldCheck, text: "Secure Payment Processing", color: "text-emerald-400" },
                 { icon: Zap, text: "Instant Ticket Delivery", color: "text-neon-purple" },
                 { icon: Globe, text: "Access from Anywhere", color: "text-neon-cyan" },
                 { icon: Users, text: "Premium Experience", color: "text-neon-pink" }
               ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-6 rounded-3xl border border-white/5 bg-white/[0.02] p-6 hover:bg-white/[0.04] transition-colors">
+                <div key={i} className="flex items-center gap-4 sm:p-5 lg:p-6 rounded-3xl border border-white/5 bg-white/[0.02] p-4 sm:p-5 lg:p-6 hover:bg-white/[0.04] transition-colors">
                   <feature.icon className={feature.color} size={24} />
                   <span className="font-bold text-white/80">{feature.text}</span>
                 </div>
@@ -168,12 +168,12 @@ export default function EventDetails() {
         </div>
 
         <aside className="relative">
-          <div className="sticky top-32 glass rounded-[3rem] border border-white/10 bg-ink/80 p-10 shadow-glow overflow-hidden">
+          <div className="sticky top-32 glass rounded-3xl lg:rounded-[3rem] border border-white/10 bg-ink/80 p-5 sm:p-7 lg:p-10 shadow-glow overflow-hidden">
             {/* Background design */}
             <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-neon-purple/10 blur-[80px]" />
             
             <div className="relative z-10">
-              <h3 className="text-3xl font-black mb-10 flex items-center justify-between text-white">
+              <h3 className="text-2xl sm:text-3xl font-black mb-10 flex items-center justify-between text-white">
                 Tickets
                 <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 animate-pulse">● Live</span>
               </h3>
@@ -183,7 +183,7 @@ export default function EventDetails() {
                   <button 
                     key={tier.name}
                     onClick={() => setSelectedTier(tier)}
-                    className={`group w-full relative flex items-center justify-between rounded-3xl border-2 p-6 transition-all duration-500 ${
+                    className={`group w-full relative flex items-center justify-between rounded-3xl border-2 p-4 sm:p-5 lg:p-6 transition-all duration-500 ${
                       selectedTier?.name === tier.name 
                       ? "border-neon-purple bg-neon-purple/10 shadow-glow" 
                       : "border-white/5 bg-white/5 hover:border-white/10 hover:bg-white/[0.08]"
@@ -205,7 +205,7 @@ export default function EventDetails() {
               </div>
 
               <div className="mt-8 pt-8 border-t border-white/10 space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs font-bold uppercase tracking-widest text-white/30">Quantity</p>
                   <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-2 border border-white/10">
                     <button 
@@ -224,14 +224,14 @@ export default function EventDetails() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-4">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-white/30">Selected</p>
                     <p className="text-sm font-black mt-1 text-white">{quantity}x {selectedTier?.name} Ticket{quantity > 1 ? 's' : ''}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold uppercase tracking-widest text-white/30">Total Price</p>
-                    <p className="text-4xl font-black text-neon-cyan">₦{(selectedTier?.price * quantity).toLocaleString() || 0}</p>
+                    <p className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-black text-neon-cyan">₦{(selectedTier?.price * quantity).toLocaleString() || 0}</p>
                   </div>
                 </div>
                 
@@ -246,7 +246,7 @@ export default function EventDetails() {
                 </Button>
 
                 <div className="flex flex-col items-center gap-4 opacity-40">
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4 sm:p-5 lg:p-6">
                     <ShieldCheck size={20} />
                     <Wallet size={20} />
                     <Zap size={20} />
