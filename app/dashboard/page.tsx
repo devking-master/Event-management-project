@@ -24,8 +24,16 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import FeatureCard from "@/components/FeatureCard";
 
+type Analytics = {
+  stats?: {
+    totalEvents?: number;
+    totalSoldTickets?: number;
+    totalRevenue?: number;
+    totalAttendees?: number;
+  };
+};
 export default function DashboardOverview() {
-  const [analytics, setAnalytics] = useState(null);
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
