@@ -1,9 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { HTMLMotionProps } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends HTMLMotionProps<"button"> {
+  children?: ReactNode;
   variant?: "primary" | "secondary" | "outline" | "ghost" | "neon" | "danger";
   size?: "sm" | "md" | "lg" | "xl";
   icon?: LucideIcon;
@@ -16,9 +19,10 @@ export default function Button({
   variant = "primary",
   size = "md",
   icon: Icon,
-  loading,
+  loading = false,
   fullWidth = false,
   className = "",
+  disabled,
   ...props
 }: ButtonProps) {
   const variants = {
@@ -39,8 +43,8 @@ export default function Button({
 
   return (
     <motion.button
-      whileHover={{ scale: props.disabled || loading ? 1 : 1.02 }}
-      whileTap={{ scale: props.disabled || loading ? 1 : 0.98 }}
+      whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
+      whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
       className={[
         "relative inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl font-bold transition-all",
         "disabled:pointer-events-none disabled:opacity-50 sm:rounded-2xl",
@@ -50,7 +54,7 @@ export default function Button({
         sizes[size],
         className,
       ].join(" ")}
-      disabled={loading || props.disabled}
+      disabled={loading || disabled}
       {...props}
     >
       {loading ? (
@@ -61,8 +65,8 @@ export default function Button({
         />
       ) : (
         <>
-          {Icon && <Icon size={18} className="shrink-0" />}
-          {children && <span className="truncate">{children}</span>}
+          {Icon ? <Icon size={18} className="shrink-0" /> : null}
+          {children ? <span className="truncate">{children}</span> : null}
         </>
       )}
     </motion.button>
