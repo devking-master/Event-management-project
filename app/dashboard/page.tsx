@@ -30,8 +30,12 @@ type Analytics = {
     totalSoldTickets?: number;
     totalRevenue?: number;
     totalAttendees?: number;
+    avgAttendance?: string | number;
   };
+  recentSales?: any[];
+  upcomingEvents?: any[];
 };
+
 export default function DashboardOverview() {
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +45,7 @@ export default function DashboardOverview() {
       try {
         const analyticsRes = await fetch("/api/dashboard/analytics");
         const analyticsData = await analyticsRes.json();
-        setAnalytics(analyticsData);
+        setAnalytics(analyticsData as Analytics);
       } catch (error) {
         console.error(error);
       } finally {
