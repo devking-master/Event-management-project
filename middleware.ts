@@ -23,9 +23,10 @@ export async function middleware(req: NextRequest) {
       const role = payload.role as string;
 
       // Role-based protection
-      if (pathname.startsWith("/dashboard/events/create") && role === "user") {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
+      // Allow both users and admins to create events
+      // if (pathname.startsWith("/dashboard/events/create") && role === "user") {
+      //   return NextResponse.redirect(new URL("/dashboard", req.url));
+      // }
 
       if (pathname.startsWith("/dashboard/admin") && role !== "admin") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
