@@ -2,40 +2,52 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
-import { 
-  Calendar, 
-  MapPin, 
-  Tag, 
-  Users, 
-  CheckCircle2, 
-  ChevronRight, 
-  Wallet, 
-  Activity,
-  Zap,
-  ShieldCheck,
-  Globe
-} from "lucide-react";
+import { Activity, Calendar, MapPin, Ticket, Truck } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+
+type EventItem = {
+  _id: string;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  location?: string;
+  category?: string;
+  imageUrl?: string;
+  status?: "upcoming" | "live" | "ended";
+  ticketTypes?: { name: string; price: number; quantity: number }[];
+  transportationAvailable?: boolean;
+  transportationDetails?: string;
+};
+
+function formatDate(value?: string) {
+  if (!value) return "Not set";
+  return new Date(value).toLocaleString(undefined, {
+    dateStyle: "full",
+    timeStyle: "short",
+  });
+}
 
 export default function EventDetails() {
   const { id } = useParams();
   const router = useRouter();
-  const [event, setEvent] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedTier, setSelectedTier] = useState<any>(null);
 
+  const [event, setEvent] = useState<EventItem | null>(null);
+  const [selectedTier, setSelectedTier] = useState<any>(null);
   const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await fetch(`/api/events/${id}`);
+        const res = await fetch(`/api/events/${id}`, { cache: "no-store" });
         const data = await res.json();
-        setEvent(data.event);
-        if (data.event?.ticketTypes?.length > 0) {
+
+        setEvent(data.event || null);
+
+        if (data.event?.ticketTypes?.length) {
           setSelectedTier(data.event.ticketTypes[0]);
         }
       } catch (error) {
@@ -44,222 +56,178 @@ export default function EventDetails() {
         setLoading(false);
       }
     };
+
     fetchEvent();
   }, [id]);
 
-  if (loading) return (
-    <div className="min-h-screen bg-night flex flex-col items-center justify-center">
-      <motion.div 
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-        className="h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 sm:h-20 sm:w-20 rounded-full border-2 border-neon-purple/20 border-t-neon-purple shadow-glow mb-8"
-      />
-      <p className="text-xs font-bold uppercase tracking-[0.4em] text-white/30 animate-pulse">Loading event details...</p>
-    </div>
-  );
+  const handleCheckout = async () => {
+    if (!event || !selectedTier) return;
 
-  if (!event) return (
-    <div className="min-h-screen bg-night flex items-center justify-center text-white">
-      <p className="text-2xl font-black opacity-20">Event Not Found</p>
-    </div>
-  );
+    if (event.status === "ended") {
+      alert("This event has ended.");
+      return;
+    }
+
+    const me = await fetch("/api/auth/me");
+    if (!me.ok) {
+      router.push(`/login?redirect=/checkout/${event._id}?tier=${selectedTier.name}&quantity=${quantity}`);
+      return;
+    }
+
+    router.push(`/checkout/${event._id}?tier=${selectedTier.name}&quantity=${quantity}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-night text-white/50">
+        Loading event...
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <main className="min-h-screen bg-night">
+        <Navbar />
+        <div className="flex min-h-screen items-center justify-center text-white/50">
+          Event not found.
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <main className="min-h-screen bg-night pb-20 sm:pb-24 lg:pb-32">
+    <main className="min-h-screen bg-night pb-24">
       <Navbar />
 
-      {/* Cinematic Hero */}
-      <div className="relative min-h-[560px] h-[70vh] w-full overflow-hidden">
-        <motion.img 
-          initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.6 }}
-          transition={{ duration: 1.5 }}
-          src={event.imageUrl || event.image || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30"} 
-          alt={event.title}
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-night via-night/40 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
-        
-        {/* HUD Elements Overlay */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-40 left-10 h-32 w-px bg-gradient-to-b from-neon-purple to-transparent opacity-40" />
-          <div className="absolute top-40 left-10 w-20 h-[1px] bg-gradient-to-r from-neon-purple to-transparent opacity-40" />
-          <div className="absolute bottom-40 right-10 h-32 w-px bg-gradient-to-t from-neon-cyan to-transparent opacity-40" />
-          <div className="absolute bottom-40 right-10 w-20 h-[1px] bg-gradient-to-l from-neon-cyan to-transparent opacity-40" />
-        </div>
+      <section className="relative min-h-[560px] overflow-hidden">
+        {event.imageUrl ? (
+          <img src={event.imageUrl} alt={event.title} className="absolute inset-0 h-full w-full object-cover opacity-60" />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 to-neon-cyan/20" />
+        )}
 
-        <div className="absolute bottom-10 sm:bottom-14 lg:bottom-20 left-0 w-full px-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap items-center gap-4 mb-8"
-            >
-              <span className="rounded-full bg-neon-purple/20 px-6 py-2 border border-neon-purple/30 text-[10px] font-black uppercase tracking-[0.3em] text-neon-purple backdrop-blur-xl">
-                {event.category}
+        <div className="absolute inset-0 bg-gradient-to-t from-night via-night/55 to-night/20" />
+
+        <div className="relative mx-auto flex min-h-[560px] max-w-7xl items-end px-5 pb-16 pt-32">
+          <div>
+            <div className="mb-6 flex flex-wrap gap-3">
+              <span className="rounded-full border border-neon-purple/30 bg-neon-purple/15 px-4 py-2 text-xs font-black uppercase tracking-widest text-neon-purple">
+                {event.category || "Event"}
               </span>
-              <span className="rounded-full bg-white/5 px-6 py-2 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-white/60 backdrop-blur-xl">
-                {new Date(event.date).toLocaleDateString(undefined, { dateStyle: 'full' })}
+              <span className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-widest text-white/60">
+                {event.status}
               </span>
-            </motion.div>
-            <motion.h1 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl font-black md:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-8xl xl:text-9xl lg:text-[10rem] leading-[0.85] tracking-tighter"
-            >
+            </div>
+
+            <h1 className="max-w-5xl text-5xl font-black leading-tight tracking-tight sm:text-7xl lg:text-8xl">
               {event.title}
-            </motion.h1>
+            </h1>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 mt-12 sm:mt-16 lg:mt-24 grid gap-16 lg:grid-cols-[1.6fr_1fr]">
-        <div className="space-y-20">
-          <section className="space-y-10">
-            <div className="flex items-center gap-4 sm:p-5 lg:p-6">
-              <div className="h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 rounded-2xl bg-neon-purple/10 flex items-center justify-center text-neon-purple border border-neon-purple/20">
-                <Activity size={28} />
-              </div>
-              <h2 className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-black text-white break-words">Event Information</h2>
+      <section className="mx-auto mt-14 grid max-w-7xl gap-8 px-5 lg:grid-cols-[1.5fr_0.9fr]">
+        <div className="space-y-8">
+          <Card animate={false}>
+            <div className="mb-6 flex items-center gap-3">
+              <Activity className="text-neon-purple" />
+              <h2 className="text-2xl font-black">Event Information</h2>
             </div>
-            
-            <Card className="p-5 sm:p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:p-12" animate={false}>
-              <p className="text-xl leading-relaxed text-white/60 whitespace-pre-line font-medium italic border-l-4 border-neon-purple pl-8">
-                {event.description || "System logs empty. No description provided for this production."}
-              </p>
+            <p className="whitespace-pre-line text-lg leading-8 text-white/60">
+              {event.description || "No description provided."}
+            </p>
 
-              <div className="mt-10 sm:mt-12 lg:mt-16 grid gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 sm:grid-cols-2">
-                <div className="group relative rounded-[2rem] bg-white/[0.03] p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 border border-white/5 transition-all hover:bg-white/[0.06] hover:border-white/10">
-                  <MapPin className="text-neon-cyan mb-6" size={32} />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-1">Location</p>
-                  <p className="text-2xl font-black text-white break-words">{event.location}</p>
-                </div>
-                <div className="group relative rounded-[2rem] bg-white/[0.03] p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 border border-white/5 transition-all hover:bg-white/[0.06] hover:border-white/10">
-                  <Calendar className="text-neon-purple mb-6" size={32} />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-1">Date & Time</p>
-                  <p className="text-2xl font-black text-white break-words">{new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                </div>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <Calendar className="mb-3 text-neon-purple" />
+                <p className="text-xs font-black uppercase tracking-widest text-white/35">Starts</p>
+                <p className="mt-1 font-bold text-white">{formatDate(event.startDate)}</p>
               </div>
-            </Card>
-          </section>
 
-          <section className="space-y-10">
-            <h2 className="text-2xl sm:text-3xl font-black flex items-center gap-4 text-white">
-              <Zap className="text-neon-cyan" size={24} /> 
-              What to Expect
-            </h2>
-            <div className="grid gap-4 sm:p-5 lg:p-6 sm:grid-cols-2">
-              {[
-                { icon: ShieldCheck, text: "Secure Payment Processing", color: "text-emerald-400" },
-                { icon: Zap, text: "Instant Ticket Delivery", color: "text-neon-purple" },
-                { icon: Globe, text: "Access from Anywhere", color: "text-neon-cyan" },
-                { icon: Users, text: "Premium Experience", color: "text-neon-pink" }
-              ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-4 sm:p-5 lg:p-6 rounded-3xl border border-white/5 bg-white/[0.02] p-4 sm:p-5 lg:p-6 hover:bg-white/[0.04] transition-colors">
-                  <feature.icon className={feature.color} size={24} />
-                  <span className="font-bold text-white/80">{feature.text}</span>
-                </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <Calendar className="mb-3 text-neon-cyan" />
+                <p className="text-xs font-black uppercase tracking-widest text-white/35">Ends</p>
+                <p className="mt-1 font-bold text-white">{formatDate(event.endDate)}</p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:col-span-2">
+                <MapPin className="mb-3 text-neon-pink" />
+                <p className="text-xs font-black uppercase tracking-widest text-white/35">Location</p>
+                <p className="mt-1 font-bold text-white">{event.location || "No location"}</p>
+              </div>
+            </div>
+          </Card>
+
+          {event.transportationAvailable && (
+            <Card animate={false}>
+              <div className="mb-4 flex items-center gap-3">
+                <Truck className="text-emerald-300" />
+                <h2 className="text-2xl font-black">Transportation Available</h2>
+              </div>
+              <p className="text-white/55">
+                {event.transportationDetails || "Transportation is available for this event."}
+              </p>
+            </Card>
+          )}
+        </div>
+
+        <aside className="space-y-5">
+          <Card animate={false} className="sticky top-28">
+            <div className="mb-6 flex items-center gap-3">
+              <Ticket className="text-neon-cyan" />
+              <h2 className="text-2xl font-black">Choose Ticket</h2>
+            </div>
+
+            <div className="space-y-3">
+              {event.ticketTypes?.map((tier) => (
+                <button
+                  key={tier.name}
+                  onClick={() => setSelectedTier(tier)}
+                  className={`w-full rounded-2xl border p-4 text-left transition ${
+                    selectedTier?.name === tier.name
+                      ? "border-neon-purple bg-neon-purple/10 text-white"
+                      : "border-white/10 bg-white/[0.03] text-white/60 hover:bg-white/[0.06]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-black">{tier.name}</span>
+                    <span className="font-black">₦{Number(tier.price || 0).toLocaleString()}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-white/35">{tier.quantity} available</p>
+                </button>
               ))}
             </div>
-          </section>
-        </div>
 
-        <aside className="relative">
-          <div className="sticky top-32 glass rounded-3xl lg:rounded-[3rem] border border-white/10 bg-ink/80 p-5 sm:p-7 lg:p-10 shadow-glow overflow-hidden">
-            {/* Background design */}
-            <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-neon-purple/10 blur-[80px]" />
-            
-            <div className="relative z-10">
-              <h3 className="text-2xl sm:text-3xl font-black mb-10 flex items-center justify-between text-white">
-                Tickets
-                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 animate-pulse">● Live</span>
-              </h3>
-              
-              <div className="space-y-5">
-                {event.ticketTypes.map((tier: any) => (
-                  <button 
-                    key={tier.name}
-                    onClick={() => setSelectedTier(tier)}
-                    className={`group w-full relative flex items-center justify-between rounded-3xl border-2 p-4 sm:p-5 lg:p-6 transition-all duration-500 ${
-                      selectedTier?.name === tier.name 
-                      ? "border-neon-purple bg-neon-purple/10 shadow-glow" 
-                      : "border-white/5 bg-white/5 hover:border-white/10 hover:bg-white/[0.08]"
-                    }`}
-                  >
-                    <div className="text-left">
-                      <p className={`text-lg font-black transition-colors ${selectedTier?.name === tier.name ? "text-neon-purple" : "text-white"}`}>
-                        {tier.name}
-                      </p>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mt-1">
-                        {tier.quantity - (event.soldTickets || 0)} Available
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-black">₦{tier.price.toLocaleString()}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-8 pt-8 border-t border-white/10 space-y-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs font-bold uppercase tracking-widest text-white/30">Quantity</p>
-                  <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-2 border border-white/10">
-                    <button 
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center font-bold hover:bg-white/10 transition"
-                    >
-                      -
-                    </button>
-                    <span className="text-xl font-black w-8 text-center">{quantity}</span>
-                    <button 
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center font-bold hover:bg-white/10 transition"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-white/30">Selected</p>
-                    <p className="text-sm font-black mt-1 text-white">{quantity}x {selectedTier?.name} Ticket{quantity > 1 ? 's' : ''}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold uppercase tracking-widest text-white/30">Total Price</p>
-                    <p className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-black text-neon-cyan">₦{(selectedTier?.price * quantity).toLocaleString() || 0}</p>
-                  </div>
-                </div>
-                
-                <Button 
-                  onClick={() => router.push(`/checkout/${id}?tier=${selectedTier?.name}&quantity=${quantity}`)}
-                  variant="neon" 
-                  size="xl" 
-                  className="w-full text-2xl h-20 shadow-glow"
-                  icon={ChevronRight}
-                >
-                  Get Tickets
-                </Button>
-
-                <div className="flex flex-col items-center gap-4 opacity-40">
-                  <div className="flex items-center gap-4 sm:p-5 lg:p-6">
-                    <ShieldCheck size={20} />
-                    <Wallet size={20} />
-                    <Zap size={20} />
-                  </div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.4em] italic text-center text-white/30">
-                    Secure Payment Guarantee
-                  </p>
-                </div>
-              </div>
+            <div className="mt-6 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+              <button
+                className="grid h-10 w-10 place-items-center rounded-xl bg-white/10"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              >
+                -
+              </button>
+              <span className="text-xl font-black">{quantity}</span>
+              <button
+                className="grid h-10 w-10 place-items-center rounded-xl bg-white/10"
+                onClick={() => setQuantity(quantity + 1)}
+              >
+                +
+              </button>
             </div>
-          </div>
+
+            <Button
+              className="mt-6"
+              variant={event.status === "ended" ? "secondary" : "neon"}
+              size="lg"
+              fullWidth
+              disabled={event.status === "ended"}
+              onClick={handleCheckout}
+            >
+              {event.status === "ended" ? "Event Ended" : "Proceed to Checkout"}
+            </Button>
+          </Card>
         </aside>
-      </div>
+      </section>
     </main>
   );
 }

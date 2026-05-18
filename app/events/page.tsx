@@ -1,29 +1,52 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
-import { Search, Filter, Calendar as CalendarIcon, MapPin, Tag, ArrowRight, Activity, Zap } from "lucide-react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import Navbar from "@/components/Navbar";
+import { Calendar as CalendarIcon, MapPin, Search, Tag, Zap } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
-import Input from "@/components/ui/Input";
+
+type EventItem = {
+  _id: string;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  location?: string;
+  category?: string;
+  imageUrl?: string;
+  ticketTypes?: { name: string; price: number; quantity: number }[];
+  status?: string;
+};
+
+function formatDate(value?: string) {
+  if (!value) return "Not set";
+  return new Date(value).toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
 
 export default function ExploreEvents() {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
 
   const fetchEvents = async () => {
     setLoading(true);
+
     try {
       const params = new URLSearchParams();
+
       if (search) params.append("search", search);
       if (category) params.append("category", category);
-      
-      const res = await fetch(`/api/events?${params.toString()}`);
+
+      // Public endpoint automatically returns only active/not-ended events.
+      const res = await fetch(`/api/events?${params.toString()}`, { cache: "no-store" });
       const data = await res.json();
+
       setEvents(data.events || []);
     } catch (error) {
       console.error(error);
@@ -36,181 +59,139 @@ export default function ExploreEvents() {
     fetchEvents();
   }, [category]);
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0 }
-  };
-
   return (
-    <main className="min-h-screen bg-night pb-20 sm:pb-24 lg:pb-32">
+    <main className="min-h-screen bg-night pb-24">
       <Navbar />
-      
-      {/* Immersive Header */}
-      <section className="relative px-5 pt-28 sm:pt-32 lg:pt-40 pb-24 overflow-hidden">
+
+      <section className="relative overflow-hidden px-5 pb-16 pt-32 sm:pt-40">
         <div className="absolute inset-0 bg-grid-pattern bg-[length:60px_60px] opacity-10" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-full max-w-6xl bg-neon-purple/5 blur-[120px] rounded-full" />
-        
+        <div className="absolute left-1/2 top-0 h-[450px] w-full max-w-6xl -translate-x-1/2 rounded-full bg-neon-purple/10 blur-[130px]" />
+
         <div className="relative mx-auto max-w-7xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/5 bg-white/5 px-6 py-2 backdrop-blur-xl"
-          >
-            <Zap size={14} className="text-neon-cyan animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50">Discover your next experience</span>
-          </motion.div>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl font-black md:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-8xl lg:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl md:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl sm:text-2xl sm:text-3xl sm:text-2xl sm:text-2xl sm:text-3xl lg:text-4xl lg:text-5xl lg:text-6xl lg:text-7xl lg:text-8xl xl:text-9xl tracking-tighter"
-          >
+          <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] px-5 py-2 backdrop-blur-xl">
+            <Zap size={14} className="text-neon-cyan" />
+            <span className="text-[10px] font-black uppercase tracking-[0.35em] text-white/50">
+              Discover live and upcoming events
+            </span>
+          </div>
+
+          <h1 className="text-5xl font-black tracking-tight sm:text-7xl lg:text-8xl">
             Explore <span className="text-neon-purple text-glow">Events</span>
-          </motion.h1>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-10 sm:mt-12 lg:mt-16 mx-auto max-w-4xl"
-          >
-            <div className="flex flex-col gap-4 p-4 rounded-3xl lg:rounded-[2.5rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl lg:flex-row shadow-2xl">
-              <div className="relative min-w-0 flex-[2] group">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-neon-purple transition-colors" size={22} />
-                <input 
-                  className="w-full h-14 sm:h-16 rounded-2xl sm:rounded-3xl border border-white/5 bg-white/5 pl-16 pr-6 outline-none focus:border-neon-purple/30 transition-all text-lg font-medium"
-                  placeholder="Search for events..."
+          </h1>
+
+          <div className="mx-auto mt-10 max-w-4xl rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-2xl">
+            <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr_auto]">
+              <div className="relative">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/25" size={20} />
+                <input
+                  className="h-14 w-full rounded-2xl border border-white/10 bg-white/[0.04] pl-14 pr-4 text-white outline-none transition focus:border-neon-purple/50"
+                  placeholder="Search events..."
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && fetchEvents()}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && fetchEvents()}
                 />
               </div>
-              <div className="relative min-w-0 flex-1 group">
-                <Tag className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-neon-cyan transition-colors" size={22} />
-                <select 
-                  className="w-full h-14 sm:h-16 rounded-2xl sm:rounded-3xl border border-white/5 bg-white/5 pl-16 pr-10 outline-none focus:border-neon-cyan/30 transition-all appearance-none text-white/60 font-medium cursor-pointer"
+
+              <div className="relative">
+                <Tag className="absolute left-5 top-1/2 -translate-y-1/2 text-white/25" size={20} />
+                <select
+                  className="h-14 w-full appearance-none rounded-2xl border border-white/10 bg-[#05050b] pl-14 pr-4 text-white outline-none transition focus:border-neon-cyan/50"
                   value={category}
-                  onChange={e => setCategory(e.target.value)}
+                  onChange={(e) => setCategory(e.target.value)}
                 >
                   <option value="">All Categories</option>
                   <option value="Concert">Concert</option>
                   <option value="Tech">Tech</option>
                   <option value="Party">Party</option>
                   <option value="Workshop">Workshop</option>
+                  <option value="Conference">Conference</option>
                 </select>
               </div>
-                <Button 
-                  onClick={fetchEvents}
-                  variant="neon" 
-                  size="lg" 
-                  className="lg:h-16 px-12 text-lg shadow-glow"
-                >
-                  Search
-                </Button>
+
+              <Button onClick={fetchEvents} variant="neon" size="lg">
+                Search
+              </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Results Grid */}
-      <section className="px-5">
-        <div className="mx-auto max-w-7xl">
-          <AnimatePresence mode="wait">
-            {loading ? (
-              <motion.div 
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="grid gap-4 sm:p-5 lg:p-6 sm:gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:gap-5 sm:p-7 lg:p-10 md:grid-cols-2 lg:grid-cols-3"
-              >
-                {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="h-[500px] w-full animate-pulse rounded-3xl lg:rounded-[3rem] bg-white/[0.03] border border-white/5" />
-                ))}
-              </motion.div>
-            ) : events.length === 0 ? (
-              <motion.div 
-                key="empty"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="py-32 text-center"
-              >
-                <Activity size={80} className="mx-auto text-white/10 mb-8" strokeWidth={1} />
-                <h3 className="text-2xl sm:text-3xl font-black text-white break-words/40">No events found</h3>
-                <p className="mt-4 text-white/20 max-w-md mx-auto">Try adjusting your search or category filters.</p>
-                <Button variant="ghost" className="mt-10" onClick={() => {setSearch(""); setCategory(""); fetchEvents();}}>Reset Filters</Button>
-              </motion.div>
-            ) : (
-              <motion.div 
-                key="results"
-                variants={container}
-                initial="hidden"
-                animate="show"
-                className="grid gap-4 sm:p-5 lg:p-6 sm:gap-5 sm:gap-4 sm:p-5 lg:p-6 lg:gap-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:gap-5 sm:p-7 lg:p-10 md:grid-cols-2 lg:grid-cols-3"
-              >
-                {events.map((event: any) => (
-                  <motion.div variants={item} key={event._id}>
-                    <Link 
-                      href={`/events/${event._id}`} 
-                      className="group relative block min-h-[420px] sm:min-h-[500px] lg:min-h-[550px] overflow-hidden rounded-3xl lg:rounded-[3rem] border border-white/10 bg-ink transition-all hover:border-neon-purple/50 hover:shadow-glow"
-                    >
-                      {/* Image Layer */}
-                      <div className="absolute inset-0">
-                        <img 
-                          src={event.imageUrl || event.image || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30"} 
-                          alt={event.title}
-                          className="h-full w-full object-cover transition duration-700 group-hover:scale-110 group-hover:blur-[2px] opacity-60 group-hover:opacity-40"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-night via-night/60 to-transparent" />
-                      </div>
-                      
-                      {/* Badge */}
-                      <div className="absolute top-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 right-8 z-20 rounded-2xl bg-black/60 backdrop-blur-xl px-5 py-3 border border-white/10 shadow-2xl">
-                        <p className="text-xs font-bold uppercase tracking-widest text-white/40 mb-1">Starting From</p>
-                        <p className="text-2xl font-black text-neon-cyan">₦{event.ticketTypes[0]?.price?.toLocaleString() || 0}</p>
+      <section className="mx-auto max-w-7xl px-5">
+        {loading ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((item) => (
+              <div key={item} className="h-[420px] animate-pulse rounded-3xl border border-white/10 bg-white/5" />
+            ))}
+          </div>
+        ) : events.length === 0 ? (
+          <Card className="py-20 text-center" animate={false}>
+            <CalendarIcon className="mx-auto mb-5 text-white/20" size={56} />
+            <h3 className="text-2xl font-black text-white/70">No available events</h3>
+            <p className="mt-2 text-white/40">
+              Ended events are automatically removed from this public explore page.
+            </p>
+          </Card>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {events.map((event) => {
+              const lowestPrice = event.ticketTypes?.length
+                ? Math.min(...event.ticketTypes.map((ticket) => Number(ticket.price) || 0))
+                : 0;
+
+              return (
+                <Link key={event._id} href={`/events/${event._id}`}>
+                  <Card className="h-full overflow-hidden p-0 transition hover:border-neon-purple/40" animate={false}>
+                    <div className="relative h-56 overflow-hidden">
+                      {event.imageUrl ? (
+                        <img src={event.imageUrl} alt={event.title} className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-gradient-to-br from-neon-purple/20 to-neon-cyan/20 text-white/20">
+                          <CalendarIcon size={52} />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-night via-transparent to-transparent" />
+                    </div>
+
+                    <div className="space-y-4 p-5">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-widest text-neon-cyan">
+                          {event.category || "Event"}
+                        </p>
+                        <h2 className="mt-2 line-clamp-2 text-2xl font-black leading-tight">
+                          {event.title}
+                        </h2>
+                        <p className="mt-2 line-clamp-2 text-sm leading-6 text-white/45">
+                          {event.description || "No description provided."}
+                        </p>
                       </div>
 
-                      {/* Content Layer */}
-                      <div className="absolute inset-0 z-10 flex flex-col justify-end p-5 sm:p-7 lg:p-10">
-                        <div className="flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-neon-purple mb-4">
-                          <span>{event.category}</span>
-                          <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-                          <span>{new Date(event.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}</span>
-                        </div>
-                        
-                        <h3 className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-black leading-tight text-white group-hover:text-neon-purple transition-colors mb-6">{event.title}</h3>
-                        
-                        <div className="flex items-center gap-4 sm:p-5 lg:p-6 border-t border-white/10 pt-8 mt-4 transition-transform group-hover:translate-y-[-10px]">
-                          <div className="flex items-center gap-2 text-sm font-medium text-white/50">
-                            <MapPin size={16} className="text-neon-cyan" /> {event.location}
-                          </div>
-                          <div className="flex-1" />
-                          <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/5 border border-white/10 text-white group-hover:bg-neon-purple group-hover:border-neon-purple transition-all duration-500">
-                            <ArrowRight size={20} />
-                          </div>
-                        </div>
+                      <div className="space-y-2 text-sm text-white/55">
+                        <p className="flex items-center gap-2">
+                          <CalendarIcon size={16} className="text-neon-purple" />
+                          {formatDate(event.startDate)}
+                        </p>
+                        <p className="flex items-center gap-2">
+                          <MapPin size={16} className="text-neon-cyan" />
+                          {event.location || "No location"}
+                        </p>
                       </div>
 
-                      {/* Hover Overlay HUD */}
-                      <div className="absolute inset-0 pointer-events-none border-[12px] border-transparent transition-all duration-500 group-hover:border-white/5" />
-                      <div className="absolute top-4 sm:p-5 lg:p-6 left-6 h-10 w-10 border-t-2 border-l-2 border-white/0 transition-all duration-500 group-hover:border-neon-purple/40" />
-                      <div className="absolute bottom-6 right-6 h-10 w-10 border-b-2 border-r-2 border-white/0 transition-all duration-500 group-hover:border-neon-purple/40" />
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                      <div className="flex items-center justify-between border-t border-white/10 pt-4">
+                        <div>
+                          <p className="text-xs text-white/35">From</p>
+                          <p className="text-xl font-black">₦{lowestPrice.toLocaleString()}</p>
+                        </div>
+                        <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-300">
+                          {event.status}
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
     </main>
   );

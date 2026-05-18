@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "plus.unsplash.com" },
     ],
   },
+  api: {
+    bodyParser: {
+      sizeLimit: "50mb", // Increased from default 1mb
+    },
+  },
 };
 
 export default nextConfig;

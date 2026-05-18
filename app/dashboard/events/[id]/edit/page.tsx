@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Calendar, ChevronLeft, Info, Layers, MapPin, Plus, Trash2, Truck, Upload, X, AlertCircle } from "lucide-react";
 import { useCloudinaryUpload } from "@/lib/useCloudinaryUpload";
 import Button from "@/components/ui/Button";
@@ -15,12 +15,15 @@ type TicketTypeForm = {
   quantity: number;
 };
 
-export default function CreateEvent() {
+export default function EditEvent() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
   const { upload: uploadToCloudinary, uploading: uploadingImage } = useCloudinaryUpload();
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [fetching, setFetching] = useState(true);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
 
@@ -39,6 +42,51 @@ export default function CreateEvent() {
     transportationDetails: "",
     ticketTypes: [{ name: "Regular", price: 0, quantity: 0 }] as TicketTypeForm[],
   });
+
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        setFetching(true);
+        const res = await fetch(`/api/events/${id}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          setMessage(data.message || "Failed to load event.");
+          return;
+        }
+
+        const event = data.event;
+
+        setForm({
+          title: event.title || "",
+          description: event.description || "",
+          startDate: event.startDate ? event.startDate.slice(0, 16) : "",
+          endDate: event.endDate ? event.endDate.slice(0, 16) : "",
+          location: event.location || "",
+          category: event.category || "Concert",
+          imageUrl: event.imageUrl || "",
+          isFree: Boolean(event.isFree),
+          transportationAvailable: Boolean(event.transportationAvailable),
+          isTransportationFree: Boolean(event.isTransportationFree),
+          transportationPrice: Number(event.transportationPrice) || 0,
+          transportationDetails: event.transportationDetails || "",
+          ticketTypes: event.ticketTypes?.length
+            ? event.ticketTypes
+            : [{ name: "Regular", price: 0, quantity: 0 }],
+        });
+
+        setImagePreview(event.imageUrl || "");
+      } catch (error) {
+        console.error(error);
+        setMessage("Failed to load event.");
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchEvent();
+  }, [id]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -107,8 +155,8 @@ export default function CreateEvent() {
         imageUrl = uploadedUrl;
       }
 
-      const res = await fetch("/api/events", {
-        method: "POST",
+      const res = await fetch(`/api/events/${id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, imageUrl }),
       });
@@ -129,6 +177,14 @@ export default function CreateEvent() {
     }
   };
 
+  if (fetching) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center text-white/50">
+        Loading event...
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 pb-20">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -141,9 +197,9 @@ export default function CreateEvent() {
             <ChevronLeft size={16} /> Back to Events
           </button>
           <h1 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
-            Create <span className="text-neon-purple">Event</span>
+            Edit <span className="text-neon-purple">Event</span>
           </h1>
-          <p className="mt-2 text-white/45">Use one start date/time and one end date/time.</p>
+          <p className="mt-2 text-white/45">Update event details using one start date/time and one end date/time.</p>
         </div>
       </header>
 
@@ -396,7 +452,7 @@ export default function CreateEvent() {
           </Card>
 
           <Button type="submit" variant="neon" size="lg" fullWidth loading={loading || uploadingImage}>
-            Create Event
+            Update Event
           </Button>
         </aside>
       </form>
