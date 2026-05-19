@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "EventFlow",
   description: "Futuristic event management system",
+  icons: {
+    icon: "/eventflow-logo.svg",
+  },
 };
 
 export default function RootLayout({
