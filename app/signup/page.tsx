@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, UserPlus, ArrowLeft, Zap, ShieldCheck } from "lucide-react";
+import { Mail, Lock, User, UserPlus, ArrowLeft, ShieldCheck } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Card from "@/components/ui/Card";
@@ -15,8 +15,13 @@ export default function SignupPage() {
     password: "",
     role: "user",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const getRedirectPath = (role?: string) => {
+    return role === "user" ? "/events" : "/dashboard";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,10 +35,11 @@ export default function SignupPage() {
         body: JSON.stringify(form),
       });
 
+      const data = await res.json();
+
       if (res.ok) {
-        window.location.href = "/login";
+        window.location.href = getRedirectPath(data.user?.role || form.role);
       } else {
-        const data = await res.json();
         setError(data.message || "Registration failed");
       }
     } catch (err) {
@@ -45,7 +51,6 @@ export default function SignupPage() {
 
   return (
     <main className="min-h-screen bg-night overflow-hidden flex items-center justify-center p-5 relative">
-      {/* Background Effects */}
       <div className="absolute inset-0 bg-grid-pattern bg-[length:50px_50px] opacity-10" />
       <div className="absolute top-1/4 right-1/4 h-96 w-96 bg-neon-cyan/10 blur-[120px] rounded-full" />
       <div className="absolute bottom-1/4 left-1/4 h-96 w-96 bg-neon-purple/10 blur-[120px] rounded-full" />
@@ -55,68 +60,76 @@ export default function SignupPage() {
           <ArrowLeft size={16} className="transition group-hover:-translate-x-1" /> Back to Home
         </Link>
 
-        <Card className="p-5 sm:p-5 sm:p-4 sm:p-5 lg:p-6 lg:p-8 lg:p-12 shadow-glow-cyan" animate={true}>
+        <Card className="p-5 sm:p-8 lg:p-12 shadow-glow-cyan" animate={true}>
           <div className="text-center mb-12">
-            <div className="mx-auto mb-6 grid h-11 w-11 sm:h-12 sm:w-12 sm:h-14 sm:w-14 sm:h-16 sm:w-16 place-items-center rounded-2xl bg-neon-cyan shadow-glow-cyan">
+            <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-2xl bg-neon-cyan shadow-glow-cyan">
               <UserPlus size={32} className="text-white" />
             </div>
-            <h1 className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight break-words text-white">Create Account</h1>
-            <p className="mt-3 text-white/40 font-medium italic">Join EventFlow today.</p>
+
+            <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-white">Create Account</h1>
+            <p className="mt-3 text-white/40 font-medium italic">
+              Attendees will be taken to Explore Events after signup.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-1 rounded-2xl bg-white/5 border border-white/10 mb-8">
               <button
                 type="button"
-                onClick={() => setForm({...form, role: "user"})}
+                onClick={() => setForm({ ...form, role: "user" })}
                 className={`flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition ${
-                  form.role === "user" ? "bg-neon-cyan text-white shadow-glow-cyan" : "text-white/30 hover:text-white/60"
+                  form.role === "user"
+                    ? "bg-neon-cyan text-white shadow-glow-cyan"
+                    : "text-white/30 hover:text-white/60"
                 }`}
               >
                 Attendee
               </button>
+
               <button
                 type="button"
-                onClick={() => setForm({...form, role: "organizer"})}
+                onClick={() => setForm({ ...form, role: "organizer" })}
                 className={`flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition ${
-                  form.role === "organizer" ? "bg-neon-purple text-white shadow-glow" : "text-white/30 hover:text-white/60"
+                  form.role === "organizer"
+                    ? "bg-neon-purple text-white shadow-glow"
+                    : "text-white/30 hover:text-white/60"
                 }`}
               >
                 Organizer
               </button>
             </div>
 
-            <Input 
+            <Input
               label="Full Name"
               placeholder="e.g. John Doe"
               icon={User}
               required
               value={form.name}
-              onChange={e => setForm({...form, name: e.target.value})}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
 
-            <Input 
+            <Input
               label="Email Address"
               type="email"
               placeholder="your@email.com"
               icon={Mail}
               required
               value={form.email}
-              onChange={e => setForm({...form, email: e.target.value})}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
 
-            <Input 
+            <Input
               label="Password"
               type="password"
               placeholder="••••••••"
               icon={Lock}
               required
               value={form.password}
-              onChange={e => setForm({...form, password: e.target.value})}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
 
             {error && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs font-bold text-rose-400 text-center uppercase tracking-widest"
@@ -125,11 +138,15 @@ export default function SignupPage() {
               </motion.div>
             )}
 
-            <Button 
-              type="submit" 
-              variant="neon" 
-              size="xl" 
-              className={`w-full ${form.role === 'user' ? 'bg-neon-cyan shadow-glow-cyan hover:bg-cyan-400' : 'bg-neon-purple shadow-glow hover:bg-purple-400'}`} 
+            <Button
+              type="submit"
+              variant="neon"
+              size="xl"
+              className={`w-full ${
+                form.role === "user"
+                  ? "bg-neon-cyan shadow-glow-cyan hover:bg-cyan-400"
+                  : "bg-neon-purple shadow-glow hover:bg-purple-400"
+              }`}
               loading={loading}
               icon={UserPlus}
             >
@@ -146,7 +163,7 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-4 sm:p-5 lg:p-6 opacity-20">
+          <div className="mt-8 flex items-center justify-center gap-4 opacity-20">
             <ShieldCheck size={18} />
             <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Identity Encrypted</span>
           </div>

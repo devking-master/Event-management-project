@@ -3,44 +3,63 @@ import { jwtVerify } from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
+async function getPayload(token?: string) {
+  if (!token) return null;
+
+  try {
+    const secret = new TextEncoder().encode(JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
   const { pathname } = req.nextUrl;
 
-  // Define protected routes
   const isDashboardRoute = pathname.startsWith("/dashboard");
   const isAuthRoute = pathname === "/login" || pathname === "/signup";
 
+  const payload = await getPayload(token);
+  const role = payload?.role as string | undefined;
+
   if (isDashboardRoute) {
-    if (!token) {
+    if (!payload) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
-    try {
-      // Use jose for Edge-compatible JWT verification
-      const secret = new TextEncoder().encode(JWT_SECRET);
-      const { payload } = await jwtVerify(token, secret);
-      const role = payload.role as string;
+    const attendeeAllowedRoutes = [
+      "/dashboard",
+      "/dashboard/tickets",
+      "/dashboard/settings",
+      "/dashboard/settings/profile",
+      "/dashboard/settings/security",
+      "/dashboard/settings/payment",
+    ];
 
-      // Role-based protection
-      // Allow both users and admins to create events
-      // if (pathname.startsWith("/dashboard/events/create") && role === "user") {
-      //   return NextResponse.redirect(new URL("/dashboard", req.url));
-      // }
+    if (role === "user") {
+      const allowed = attendeeAllowedRoutes.some(
+        (route) => pathname === route || pathname.startsWith(`${route}/`)
+      );
 
-      if (pathname.startsWith("/dashboard/admin") && role !== "admin") {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
+      if (!allowed) {
+        return NextResponse.redirect(new URL("/dashboard/tickets", req.url));
       }
-
-      return NextResponse.next();
-    } catch (error) {
-      console.error("Middleware JWT error:", error);
-      return NextResponse.redirect(new URL("/login", req.url));
     }
+
+    if (pathname.startsWith("/dashboard/admin") && role !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
+    return NextResponse.next();
   }
 
-  if (isAuthRoute && token) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  if (isAuthRoute && payload) {
+    return NextResponse.redirect(
+      new URL(role === "user" ? "/events" : "/dashboard", req.url)
+    );
   }
 
   return NextResponse.next();

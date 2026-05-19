@@ -12,14 +12,20 @@ import {
   ArrowRight,
   ChevronRight,
   Activity,
-  Truck,
-  Building2,
   Zap,
   CheckCircle2,
+  Search,
+  Settings,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import FeatureCard from "@/components/FeatureCard";
+
+type User = {
+  name?: string;
+  email?: string;
+  role?: "user" | "organizer" | "admin";
+};
 
 type Analytics = {
   stats: {
@@ -45,13 +51,61 @@ const defaultAnalytics: Analytics = {
   upcomingEvents: [],
 };
 
+function AttendeeDashboard({ user }: { user: User | null }) {
+  return (
+    <div className="space-y-8 pb-16 md:pb-20">
+      <div>
+        <h1 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+          Welcome <span className="text-neon-cyan">{user?.name || "Attendee"}</span>
+        </h1>
+        <p className="mt-2 max-w-2xl text-white/45">
+          Your attendee dashboard gives you quick access to explore events, track purchased tickets, and manage your settings.
+        </p>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-3">
+        <Link href="/events">
+          <FeatureCard
+            title="Explore Events"
+            description="Discover live and upcoming events available for booking."
+            icon={<Search size={24} />}
+          />
+        </Link>
+
+        <Link href="/dashboard/tickets">
+          <FeatureCard
+            title="My Tickets"
+            description="View, download, and track tickets you have purchased."
+            icon={<Ticket size={24} />}
+          />
+        </Link>
+
+        <Link href="/dashboard/settings">
+          <FeatureCard
+            title="Settings"
+            description="Manage your account profile, security, and preferences."
+            icon={<Settings size={24} />}
+          />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardOverview() {
+  const [user, setUser] = useState<User | null>(null);
   const [analytics, setAnalytics] = useState<Analytics>(defaultAnalytics);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDashboard = async () => {
       try {
+        const userRes = await fetch("/api/auth/me");
+        const userData = await userRes.json();
+        setUser(userData.user);
+
+        if (userData.user?.role === "user") return;
+
         const analyticsRes = await fetch("/api/dashboard/analytics");
         const analyticsData = await analyticsRes.json();
 
@@ -73,29 +127,24 @@ export default function DashboardOverview() {
       }
     };
 
-    fetchData();
+    fetchDashboard();
   }, []);
 
   if (loading) {
     return (
       <div className="space-y-8 pb-16 md:pb-20">
-        <div className="h-8 md:h-10 lg:h-12 w-48 md:w-56 lg:w-72 animate-pulse rounded-xl md:rounded-2xl bg-white/5" />
-
-        <div className="grid gap-3 md:gap-4 lg:gap-5 grid-cols-1 xs:grid-cols-2 lg:grid-cols-4">
+        <div className="h-10 w-72 animate-pulse rounded-2xl bg-white/5" />
+        <div className="grid gap-4 grid-cols-1 xs:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-28 md:h-32 animate-pulse rounded-2xl md:rounded-3xl lg:rounded-[2.5rem] bg-white/5"
-            />
+            <div key={i} className="h-32 animate-pulse rounded-3xl bg-white/5" />
           ))}
-        </div>
-
-        <div className="grid gap-4 md:gap-5 grid-cols-1 lg:grid-cols-3">
-          <div className="lg:col-span-2 h-64 md:h-80 animate-pulse rounded-2xl md:rounded-3xl lg:rounded-[2.5rem] bg-white/5" />
-          <div className="h-64 md:h-80 animate-pulse rounded-2xl md:rounded-3xl lg:rounded-[2.5rem] bg-white/5" />
         </div>
       </div>
     );
+  }
+
+  if (user?.role === "user") {
+    return <AttendeeDashboard user={user} />;
   }
 
   return (
@@ -119,52 +168,40 @@ export default function DashboardOverview() {
       </div>
 
       <div className="grid gap-3 md:gap-4 lg:gap-5 grid-cols-1 xs:grid-cols-2 lg:grid-cols-4">
-        <Card animate={true} delay={0} hoverGlow={true}>
+        <Card animate delay={0} hoverGlow>
           <div className="flex flex-col xs:flex-row xs:items-start xs:justify-between gap-3">
             <div className="space-y-2 xs:space-y-3 flex-1 min-w-0">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/50">
-                Total Events
-              </p>
-              <p className="text-2xl sm:text-3xl font-black break-words">
-                {analytics.stats.totalEvents}
-              </p>
+              <p className="text-xs font-bold uppercase tracking-widest text-white/50">Total Events</p>
+              <p className="text-2xl sm:text-3xl font-black break-words">{analytics.stats.totalEvents}</p>
               <p className="text-xs text-emerald-400/80 flex items-center gap-1">
                 <TrendingUp size={12} /> Live & Scheduled
               </p>
             </div>
-
             <div className="h-10 w-10 xs:h-12 xs:w-12 rounded-lg xs:rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-purple/10 flex items-center justify-center flex-shrink-0">
               <Calendar size={20} className="xs:w-6 xs:h-6 text-neon-purple" />
             </div>
           </div>
         </Card>
 
-        <Card animate={true} delay={0.05} hoverGlow={true}>
+        <Card animate delay={0.05} hoverGlow>
           <div className="flex flex-col xs:flex-row xs:items-start xs:justify-between gap-3">
             <div className="space-y-2 xs:space-y-3 flex-1 min-w-0">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/50">
-                Tickets Sold
-              </p>
-              <p className="text-2xl sm:text-3xl font-black break-words">
-                {analytics.stats.totalSoldTickets}
-              </p>
+              <p className="text-xs font-bold uppercase tracking-widest text-white/50">Tickets Sold</p>
+              <p className="text-2xl sm:text-3xl font-black break-words">{analytics.stats.totalSoldTickets}</p>
               <p className="text-xs text-neon-cyan/80 flex items-center gap-1">
                 <Zap size={12} /> Active Sales
               </p>
             </div>
-
             <div className="h-10 w-10 xs:h-12 xs:w-12 rounded-lg xs:rounded-xl bg-gradient-to-br from-neon-cyan/20 to-neon-cyan/10 flex items-center justify-center flex-shrink-0">
               <Ticket size={20} className="xs:w-6 xs:h-6 text-neon-cyan" />
             </div>
           </div>
         </Card>
 
-        <Card animate={true} delay={0.1} hoverGlow={true}>
+        <Card animate delay={0.1} hoverGlow>
           <div className="flex flex-col xs:flex-row xs:items-start xs:justify-between gap-3">
             <div className="space-y-2 xs:space-y-3 flex-1 min-w-0">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/50">
-                Total Revenue
-              </p>
+              <p className="text-xs font-bold uppercase tracking-widest text-white/50">Total Revenue</p>
               <p className="text-2xl sm:text-3xl font-black break-words">
                 ₦{analytics.stats.totalRevenue.toLocaleString()}
               </p>
@@ -172,27 +209,21 @@ export default function DashboardOverview() {
                 <TrendingUp size={12} /> Successful Orders
               </p>
             </div>
-
             <div className="h-10 w-10 xs:h-12 xs:w-12 rounded-lg xs:rounded-xl bg-gradient-to-br from-neon-pink/20 to-neon-pink/10 flex items-center justify-center flex-shrink-0">
               <DollarSign size={20} className="xs:w-6 xs:h-6 text-neon-pink" />
             </div>
           </div>
         </Card>
 
-        <Card animate={true} delay={0.15} hoverGlow={true}>
+        <Card animate delay={0.15} hoverGlow>
           <div className="flex flex-col xs:flex-row xs:items-start xs:justify-between gap-3">
             <div className="space-y-2 xs:space-y-3 flex-1 min-w-0">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/50">
-                Avg Attendance
-              </p>
-              <p className="text-2xl sm:text-3xl font-black break-words">
-                {analytics.stats.avgAttendance}
-              </p>
+              <p className="text-xs font-bold uppercase tracking-widest text-white/50">Avg Attendance</p>
+              <p className="text-2xl sm:text-3xl font-black break-words">{analytics.stats.avgAttendance}</p>
               <p className="text-xs text-amber-400/80 flex items-center gap-1">
                 <Activity size={12} /> Checked In
               </p>
             </div>
-
             <div className="h-10 w-10 xs:h-12 xs:w-12 rounded-lg xs:rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-400/10 flex items-center justify-center flex-shrink-0">
               <Users size={20} className="xs:w-6 xs:h-6 text-amber-400" />
             </div>
@@ -201,18 +232,13 @@ export default function DashboardOverview() {
       </div>
 
       <div className="grid gap-4 md:gap-5 grid-cols-1 lg:grid-cols-3">
-        <Card className="lg:col-span-2" animate={true} delay={0.2}>
+        <Card className="lg:col-span-2" animate delay={0.2}>
           <div className="space-y-6 md:space-y-8">
             <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3">
               <div className="space-y-1">
-                <h2 className="text-xl md:text-2xl font-black">
-                  Recent Transactions
-                </h2>
-                <p className="text-xs md:text-sm text-white/40">
-                  Latest payment confirmations
-                </p>
+                <h2 className="text-xl md:text-2xl font-black">Recent Transactions</h2>
+                <p className="text-xs md:text-sm text-white/40">Latest payment confirmations</p>
               </div>
-
               <Link href="/dashboard/events" className="flex-shrink-0">
                 <Button variant="secondary" size="sm" icon={ArrowRight} />
               </Link>
@@ -221,22 +247,14 @@ export default function DashboardOverview() {
             <div className="space-y-2 md:space-y-3">
               {analytics.recentSales.length > 0 ? (
                 analytics.recentSales.map((sale: any) => (
-                  <div
-                    key={sale._id}
-                    className="group flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 xs:gap-4 rounded-lg xs:rounded-xl border border-white/5 bg-white/[0.02] p-3 xs:p-4 transition duration-300 hover:bg-white/[0.05] hover:border-neon-cyan/20"
-                  >
+                  <div key={sale._id} className="group flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 xs:gap-4 rounded-lg xs:rounded-xl border border-white/5 bg-white/[0.02] p-3 xs:p-4 transition duration-300 hover:bg-white/[0.05] hover:border-neon-cyan/20">
                     <div className="flex items-center gap-2 xs:gap-4 flex-1 min-w-0">
                       <div className="h-8 w-8 xs:h-10 xs:w-10 rounded-lg bg-gradient-to-br from-neon-purple to-neon-cyan flex items-center justify-center flex-shrink-0">
                         <TrendingUp size={16} className="xs:w-[18px] xs:h-[18px] text-white" />
                       </div>
-
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs xs:text-sm font-semibold text-white truncate">
-                          {sale.userId?.name || "Customer"}
-                        </p>
-                        <p className="text-xs text-white/40 truncate hidden xs:block">
-                          {sale.userId?.email || "No email"}
-                        </p>
+                        <p className="text-xs xs:text-sm font-semibold text-white truncate">{sale.userId?.name || "Customer"}</p>
+                        <p className="text-xs text-white/40 truncate hidden xs:block">{sale.userId?.email || "No email"}</p>
                       </div>
                     </div>
 
@@ -244,15 +262,10 @@ export default function DashboardOverview() {
                       <p className="text-xs xs:text-sm font-black text-neon-cyan">
                         ₦{(sale.totalAmount ?? 0).toLocaleString()}
                       </p>
-
                       <span className="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 xs:py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                         <CheckCircle2 size={10} className="xs:w-3 xs:h-3 text-emerald-400" />
-                        <span className="text-xs font-semibold text-emerald-400 hidden xs:inline">
-                          Confirmed
-                        </span>
-                        <span className="text-xs font-semibold text-emerald-400 xs:hidden">
-                          OK
-                        </span>
+                        <span className="text-xs font-semibold text-emerald-400 hidden xs:inline">Confirmed</span>
+                        <span className="text-xs font-semibold text-emerald-400 xs:hidden">OK</span>
                       </span>
                     </div>
                   </div>
@@ -260,53 +273,38 @@ export default function DashboardOverview() {
               ) : (
                 <div className="py-8 md:py-12 text-center rounded-lg xs:rounded-xl border border-white/5 bg-white/[0.02]">
                   <Activity className="mx-auto mb-2 md:mb-3 text-white/20" size={28} />
-                  <p className="text-xs md:text-sm text-white/40">
-                    No transactions yet
-                  </p>
+                  <p className="text-xs md:text-sm text-white/40">No transactions yet</p>
                 </div>
               )}
             </div>
           </div>
         </Card>
 
-        <Card animate={true} delay={0.25}>
+        <Card animate delay={0.25}>
           <div className="space-y-4 md:space-y-6">
             <div>
               <h2 className="text-xl md:text-2xl font-black">Next Events</h2>
-              <p className="mt-1 text-xs md:text-sm text-white/40">
-                Upcoming calendar
-              </p>
+              <p className="mt-1 text-xs md:text-sm text-white/40">Upcoming calendar</p>
             </div>
 
             <div className="space-y-2 md:space-y-3">
               {analytics.upcomingEvents.length > 0 ? (
                 analytics.upcomingEvents.map((event: any) => (
-                  <Link
-                    key={event._id}
-                    href={`/events/${event._id}`}
-                    className="group block"
-                  >
+                  <Link key={event._id} href={`/events/${event._id}`} className="group block">
                     <div className="rounded-lg xs:rounded-xl border border-white/5 bg-white/[0.02] p-2.5 xs:p-3.5 transition duration-300 hover:bg-white/[0.08] hover:border-neon-purple/30">
                       <div className="flex items-start justify-between gap-2 mb-1.5 xs:mb-2">
                         <p className="text-xs xs:text-sm font-semibold text-white line-clamp-1 flex-1">
-                          {event.name}
+                          {event.name || event.title}
                         </p>
-                        <ChevronRight
-                          size={14}
-                          className="xs:w-4 xs:h-4 text-white/30 group-hover:text-neon-purple flex-shrink-0 mt-0.5"
-                        />
+                        <ChevronRight size={14} className="xs:w-4 xs:h-4 text-white/30 group-hover:text-neon-purple flex-shrink-0 mt-0.5" />
                       </div>
-
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-xs text-white/40">
                           <Calendar size={12} className="text-neon-cyan flex-shrink-0" />
                           <span className="truncate">
-                            {event.startDate
-                              ? new Date(event.startDate).toLocaleDateString()
-                              : "No date"}
+                            {event.startDate ? new Date(event.startDate).toLocaleDateString() : "No date"}
                           </span>
                         </div>
-
                         <div className="flex items-center gap-2 text-xs text-white/40">
                           <Users size={12} className="text-neon-pink flex-shrink-0" />
                           <span>{event.capacity ?? 0} attendees</span>
@@ -324,11 +322,7 @@ export default function DashboardOverview() {
             </div>
 
             <Link href="/dashboard/events" className="w-full block mt-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                className="w-full justify-center text-xs xs:text-sm"
-              >
+              <Button variant="secondary" size="sm" className="w-full justify-center text-xs xs:text-sm">
                 View All Events
               </Button>
             </Link>
@@ -339,42 +333,20 @@ export default function DashboardOverview() {
       <div className="space-y-4 md:space-y-6">
         <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 xs:gap-4">
           <h2 className="text-xl md:text-2xl font-black">Quick Actions</h2>
-          <p className="text-xs md:text-sm text-white/40">
-            Fast access to core features
-          </p>
+          <p className="text-xs md:text-sm text-white/40">Fast access to core features</p>
         </div>
 
-        <div className="grid gap-3 md:gap-4 lg:gap-5 grid-cols-1 xs:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 md:gap-4 lg:gap-5 grid-cols-1 xs:grid-cols-2 lg:grid-cols-3">
           <Link href="/dashboard/events/create">
-            <FeatureCard
-              title="New Event"
-              description="Create and launch an event"
-              icon={<Plus size={24} />}
-            />
+            <FeatureCard title="New Event" description="Create and launch an event" icon={<Plus size={24} />} />
+          </Link>
+
+          <Link href="/dashboard/events">
+            <FeatureCard title="Manage Events" description="View and control your events" icon={<Calendar size={24} />} />
           </Link>
 
           <Link href="/dashboard/tickets">
-            <FeatureCard
-              title="Manage Tickets"
-              description="View and control tickets"
-              icon={<Ticket size={24} />}
-            />
-          </Link>
-
-          <Link href="/dashboard/logistics">
-            <FeatureCard
-              title="Transportation"
-              description="Organize logistics & rides"
-              icon={<Truck size={24} />}
-            />
-          </Link>
-
-          <Link href="/dashboard/accommodation">
-            <FeatureCard
-              title="Lodging"
-              description="Manage accommodations"
-              icon={<Building2 size={24} />}
-            />
+            <FeatureCard title="Manage Tickets" description="View and control tickets" icon={<Ticket size={24} />} />
           </Link>
         </div>
       </div>
