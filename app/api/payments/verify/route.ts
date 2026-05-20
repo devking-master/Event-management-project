@@ -35,6 +35,21 @@ export async function GET(req: Request) {
       return NextResponse.redirect(new URL("/checkout/failed", req.url));
     }
 
+    const purchasedTicketItems = order.tickets.filter(
+      (item: any) => item.type !== "Transportation"
+    );
+
+    for (const item of purchasedTicketItems) {
+      const ticketType = event.ticketTypes.find((ticket: any) => ticket.name === item.type);
+
+      if (!ticketType || Number(item.quantity) > Number(ticketType.quantity || 0)) {
+        order.paymentStatus = "failed";
+        await order.save();
+
+        return NextResponse.redirect(new URL("/checkout/failed", req.url));
+      }
+    }
+
     const transportItem = order.tickets.find((item: any) => item.type === "Transportation");
 
     if (transportItem) {
@@ -62,10 +77,6 @@ export async function GET(req: Request) {
       status: "successful",
       provider: "Paystack",
     });
-
-    const purchasedTicketItems = order.tickets.filter(
-      (item: any) => item.type !== "Transportation"
-    );
 
     const createdTickets = [];
 
@@ -95,7 +106,27 @@ export async function GET(req: Request) {
       }
     }
 
+    const updatedTicketTypes = event.ticketTypes.map((ticket: any) => {
+      const purchased = purchasedTicketItems.find(
+        (item: any) => item.type === ticket.name
+      );
+
+      if (!purchased) {
+        return typeof ticket.toObject === "function" ? ticket.toObject() : ticket;
+      }
+
+      const plainTicket = typeof ticket.toObject === "function" ? ticket.toObject() : ticket;
+
+      return {
+        ...plainTicket,
+        quantity: Math.max(0, Number(ticket.quantity || 0) - Number(purchased.quantity || 0)),
+      };
+    });
+
     const update: any = {
+      $set: {
+        ticketTypes: updatedTicketTypes,
+      },
       $inc: {
         soldTickets: createdTickets.length,
       },

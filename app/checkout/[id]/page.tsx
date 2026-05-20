@@ -3,9 +3,61 @@
 import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { ArrowLeft, Bus, Clock, CreditCard, Loader2, MapPin, Truck, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  Bus,
+  CheckCircle2,
+  Clock,
+  CreditCard,
+  Loader2,
+  Lock,
+  MapPin,
+  Truck,
+  User,
+  Users,
+  X,
+} from "lucide-react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+
+type CardForm = {
+  cardName: string;
+  cardNumber: string;
+  expiry: string;
+  cvv: string;
+};
+
+function formatCardNumber(value: string) {
+  return value
+    .replace(/\D/g, "")
+    .slice(0, 16)
+    .replace(/(.{4})/g, "$1 ")
+    .trim();
+}
+
+function formatExpiry(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+}
+
+function validateCard(form: CardForm) {
+  const number = form.cardNumber.replace(/\s/g, "");
+  const expiry = form.expiry.trim();
+  const cvv = form.cvv.trim();
+
+  if (!form.cardName.trim()) return "Cardholder name is required.";
+  if (number.length !== 16) return "Card number must be 16 digits.";
+  if (!/^\d{2}\/\d{2}$/.test(expiry)) return "Expiry must be in MM/YY format.";
+  if (!/^\d{3,4}$/.test(cvv)) return "CVV must be 3 or 4 digits.";
+
+  const [monthText] = expiry.split("/");
+  const month = Number(monthText);
+
+  if (month < 1 || month > 12) return "Expiry month must be between 01 and 12.";
+
+  return "";
+}
 
 function CheckoutContent() {
   const { id } = useParams();
@@ -16,10 +68,19 @@ function CheckoutContent() {
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
   const [includeTransportation, setIncludeTransportation] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [cardError, setCardError] = useState("");
 
   const [currentTier, setCurrentTier] = useState("");
   const [currentQuantity, setCurrentQuantity] = useState(1);
   const [transportQuantity, setTransportQuantity] = useState(1);
+
+  const [cardForm, setCardForm] = useState<CardForm>({
+    cardName: "",
+    cardNumber: "",
+    expiry: "",
+    cvv: "",
+  });
 
   useEffect(() => {
     const checkAuthAndFetchEvent = async () => {
@@ -74,14 +135,48 @@ function CheckoutContent() {
   const transportUnitPrice = event?.isTransportationFree ? 0 : Number(event?.transportationPrice || 0);
   const transportAmount = includeTransportation ? transportUnitPrice * transportQuantity : 0;
   const totalAmount = baseAmount + transportAmount;
+
+  const ticketSeatsLeft = Number(selectedTier?.quantity || 0);
+
   const transportSeatsLeft =
     event?.transportSeatsLeft ??
     Math.max(0, Number(event?.transportSeats || 0) - Number(event?.transportBooked || 0));
 
-  const handlePayment = async () => {
+  const openPaymentModal = () => {
+    if (!selectedTier) {
+      alert("Please select a ticket type.");
+      return;
+    }
+
+    if (currentQuantity > ticketSeatsLeft) {
+      alert(`Only ${ticketSeatsLeft} ticket(s) available.`);
+      return;
+    }
+
+    if (includeTransportation && transportQuantity > transportSeatsLeft) {
+      alert(`Only ${transportSeatsLeft} transport seat(s) available.`);
+      return;
+    }
+
+    setCardError("");
+    setPaymentOpen(true);
+  };
+
+  const processFakePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const error = validateCard(cardForm);
+    if (error) {
+      setCardError(error);
+      return;
+    }
+
     setPaying(true);
+    setCardError("");
 
     try {
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
       const res = await fetch("/api/payments/initialize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -105,11 +200,11 @@ function CheckoutContent() {
       if (res.ok && data.authorization_url) {
         window.location.href = data.authorization_url;
       } else {
-        alert(data.message || "Payment initialization failed");
+        setCardError(data.message || "Payment initialization failed");
       }
     } catch (error) {
       console.error(error);
-      alert("Something went wrong");
+      setCardError("Something went wrong while processing payment.");
     } finally {
       setPaying(false);
     }
@@ -175,6 +270,9 @@ function CheckoutContent() {
                         }`}
                       >
                         {tier.name}
+                        <span className="ml-2 text-xs text-white/35">
+                          {Math.max(0, Number(tier.quantity || 0))} left
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -201,7 +299,7 @@ function CheckoutContent() {
                       <button
                         type="button"
                         onClick={() => {
-                          const next = currentQuantity + 1;
+                          const next = Math.min(ticketSeatsLeft, currentQuantity + 1);
                           setCurrentQuantity(next);
                           if (!includeTransportation) setTransportQuantity(next);
                         }}
@@ -323,14 +421,179 @@ function CheckoutContent() {
               size="lg"
               fullWidth
               loading={paying}
-              onClick={handlePayment}
-              disabled={!selectedTier || (includeTransportation && transportQuantity > transportSeatsLeft)}
+              onClick={openPaymentModal}
+              disabled={!selectedTier || currentQuantity > ticketSeatsLeft || (includeTransportation && transportQuantity > transportSeatsLeft)}
             >
               Pay Now
             </Button>
+
+            <p className="flex items-center justify-center gap-2 text-center text-xs text-white/30">
+              <Lock size={13} />
+              Demo payment only. Card details are not saved.
+            </p>
           </Card>
         </div>
       </div>
+
+      {paymentOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 px-4 backdrop-blur-md">
+          <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-[2rem] border border-white/10 bg-[#070712] shadow-2xl shadow-neon-purple/20">
+            <div className="flex items-center justify-between border-b border-white/10 p-5 sm:p-6 sticky top-0 bg-[#070712]">
+              <div className="flex items-center gap-3">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-neon-purple/10 text-neon-purple">
+                  <CreditCard size={24} />
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-black text-white">Fake Card Payment</h3>
+                  <p className="text-xs text-white/35">Enter demo card details to continue</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => !paying && setPaymentOpen(false)}
+                className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 text-white/45 transition hover:bg-white/10 hover:text-white"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={processFakePayment} className="space-y-5 p-5 sm:p-6">
+              <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-neon-purple/20 via-white/[0.04] to-neon-cyan/10 p-5">
+                <div className="mb-8 flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-[0.25em] text-white/45">
+                    EventFlow Card
+                  </span>
+                  <CreditCard className="text-white/55" />
+                </div>
+
+                <p className="font-mono text-xl font-black tracking-widest text-white sm:text-2xl">
+                  {cardForm.cardNumber || "4242 4242 4242 4242"}
+                </p>
+
+                <div className="mt-6 flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/30">
+                      Cardholder
+                    </p>
+                    <p className="mt-1 truncate text-sm font-bold text-white">
+                      {cardForm.cardName || "YOUR NAME"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/30">
+                      Expires
+                    </p>
+                    <p className="mt-1 text-sm font-bold text-white">
+                      {cardForm.expiry || "12/30"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="ml-1 text-xs font-black uppercase tracking-[0.2em] text-white/45">
+                  Cardholder Name
+                </label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/25" />
+                  <input
+                    value={cardForm.cardName}
+                    onChange={(e) => setCardForm({ ...cardForm, cardName: e.target.value })}
+                    placeholder="e.g. Abass Oluwaseun"
+                    className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 pl-12 text-white outline-none placeholder:text-white/20 focus:border-neon-purple/50"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="ml-1 text-xs font-black uppercase tracking-[0.2em] text-white/45">
+                  Card Number
+                </label>
+                <div className="relative">
+                  <CreditCard className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/25" />
+                  <input
+                    value={cardForm.cardNumber}
+                    onChange={(e) =>
+                      setCardForm({
+                        ...cardForm,
+                        cardNumber: formatCardNumber(e.target.value),
+                      })
+                    }
+                    inputMode="numeric"
+                    placeholder="4242 4242 4242 4242"
+                    className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 pl-12 text-white outline-none placeholder:text-white/20 focus:border-neon-purple/50"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="ml-1 text-xs font-black uppercase tracking-[0.2em] text-white/45">
+                    Expiry
+                  </label>
+                  <input
+                    value={cardForm.expiry}
+                    onChange={(e) =>
+                      setCardForm({
+                        ...cardForm,
+                        expiry: formatExpiry(e.target.value),
+                      })
+                    }
+                    inputMode="numeric"
+                    placeholder="MM/YY"
+                    className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white outline-none placeholder:text-white/20 focus:border-neon-purple/50"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="ml-1 text-xs font-black uppercase tracking-[0.2em] text-white/45">
+                    CVV
+                  </label>
+                  <input
+                    value={cardForm.cvv}
+                    onChange={(e) =>
+                      setCardForm({
+                        ...cardForm,
+                        cvv: e.target.value.replace(/\D/g, "").slice(0, 4),
+                      })
+                    }
+                    inputMode="numeric"
+                    placeholder="123"
+                    className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white outline-none placeholder:text-white/20 focus:border-neon-purple/50"
+                  />
+                </div>
+              </div>
+
+              {cardError && (
+                <p className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm font-bold text-rose-300">
+                  {cardError}
+                </p>
+              )}
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/45">Amount to pay</span>
+                  <span className="text-2xl font-black text-neon-cyan">
+                    ₦{totalAmount.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              <Button type="submit" variant="neon" size="lg" fullWidth loading={paying}>
+                {paying ? "Processing..." : "Pay"}
+              </Button>
+
+              <p className="flex items-center justify-center gap-2 text-center text-xs text-white/30">
+                <CheckCircle2 size={13} />
+                Demo only: use any 16 digits, valid MM/YY, and any CVV.
+              </p>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
