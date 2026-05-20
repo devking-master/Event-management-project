@@ -445,8 +445,8 @@ function CheckoutContent() {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-black text-white">Fake Card Payment</h3>
-                  <p className="text-xs text-white/35">Enter demo card details to continue</p>
+                  <h3 className="text-xl font-black text-white">Card Payment</h3>
+                  <p className="text-xs text-white/35">Enter card details to continue</p>
                 </div>
               </div>
 
