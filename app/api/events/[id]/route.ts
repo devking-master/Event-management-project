@@ -14,9 +14,11 @@ function getEventStatus(startDate: Date, endDate: Date) {
 
 function eventWithComputedStatus(event: any) {
   const obj = typeof event.toObject === "function" ? event.toObject() : event;
+
   return {
     ...obj,
     status: getEventStatus(new Date(obj.startDate), new Date(obj.endDate)),
+    transportSeatsLeft: Math.max(0, Number(obj.transportSeats || 0) - Number(obj.transportBooked || 0)),
   };
 }
 
@@ -85,6 +87,23 @@ export async function PUT(
       );
     }
 
+    if (body.transportationAvailable) {
+      if (!body.transportPickup?.trim()) {
+        return NextResponse.json({ message: "Transportation pickup location is required" }, { status: 400 });
+      }
+
+      if (!body.transportDepartureTime) {
+        return NextResponse.json({ message: "Transportation departure time is required" }, { status: 400 });
+      }
+
+      if (Number(body.transportSeats) < Number(existingEvent.transportBooked || 0)) {
+        return NextResponse.json(
+          { message: "Transportation seats cannot be less than already booked seats" },
+          { status: 400 }
+        );
+      }
+    }
+
     const ticketTypes = Array.isArray(body.ticketTypes)
       ? body.ticketTypes.map((ticket: any) => ({
           name: ticket.name,
@@ -93,7 +112,10 @@ export async function PUT(
         }))
       : existingEvent.ticketTypes;
 
-    const totalTickets = ticketTypes.reduce((sum: number, ticket: any) => sum + Number(ticket.quantity || 0), 0);
+    const totalTickets = ticketTypes.reduce(
+      (sum: number, ticket: any) => sum + Number(ticket.quantity || 0),
+      0
+    );
 
     const event = await Event.findByIdAndUpdate(
       id,
@@ -106,10 +128,22 @@ export async function PUT(
         category: body.category,
         imageUrl: body.imageUrl || "",
         isFree: Boolean(body.isFree),
+
         transportationAvailable: Boolean(body.transportationAvailable),
         isTransportationFree: Boolean(body.isTransportationFree),
-        transportationPrice: Number(body.transportationPrice) || 0,
+        transportationPrice:
+          body.transportationAvailable && !body.isTransportationFree
+            ? Number(body.transportationPrice) || 0
+            : 0,
         transportationDetails: body.transportationDetails,
+        transportPickup: body.transportationAvailable ? body.transportPickup : "",
+        transportDepartureTime:
+          body.transportationAvailable && body.transportDepartureTime
+            ? new Date(body.transportDepartureTime)
+            : undefined,
+        transportSeats: body.transportationAvailable ? Number(body.transportSeats) || 0 : 0,
+        transportType: body.transportationAvailable ? body.transportType || "Bus" : "Bus",
+
         ticketTypes,
         totalTickets,
         status: getEventStatus(startDate, endDate),
@@ -117,7 +151,10 @@ export async function PUT(
       { new: true }
     ).populate("organizer", "name email");
 
-    return NextResponse.json({ message: "Event updated", event: eventWithComputedStatus(event) });
+    return NextResponse.json({
+      message: "Event updated",
+      event: eventWithComputedStatus(event),
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Server error";
     return NextResponse.json({ message }, { status: 500 });

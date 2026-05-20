@@ -9,6 +9,7 @@ import crypto from "crypto";
 export async function GET(req: Request) {
   try {
     await dbConnect();
+
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get("orderId");
     const status = searchParams.get("status");
@@ -19,31 +20,59 @@ export async function GET(req: Request) {
     }
 
     const order = await Order.findById(orderId).populate("userId");
-    if (!order || order.paymentStatus === "successful") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+
+    if (!order) {
+      return NextResponse.redirect(new URL("/checkout/failed", req.url));
+    }
+
+    if (order.paymentStatus === "successful") {
+      return NextResponse.redirect(new URL(`/checkout/success?orderId=${orderId}`, req.url));
+    }
+
+    const event = await Event.findById(order.eventId);
+
+    if (!event) {
+      return NextResponse.redirect(new URL("/checkout/failed", req.url));
+    }
+
+    const transportItem = order.tickets.find((item: any) => item.type === "Transportation");
+
+    if (transportItem) {
+      const remainingSeats =
+        Number(event.transportSeats || 0) - Number(event.transportBooked || 0);
+
+      if (Number(transportItem.quantity) > remainingSeats) {
+        order.paymentStatus = "failed";
+        await order.save();
+
+        return NextResponse.redirect(new URL("/checkout/failed", req.url));
+      }
     }
 
     const user = order.userId as any;
 
-    // 1. Update Order Status
     order.paymentStatus = "successful";
     await order.save();
 
-    // 2. Record Payment
     await Payment.create({
       orderId: order._id,
       transactionId: reference || `REF-${Date.now()}`,
       amount: order.totalAmount,
       currency: "NGN",
       status: "successful",
-      provider: "Paystack", // Mock
+      provider: "Paystack",
     });
 
-    // 3. Generate Tickets
-    const tickets = [];
-    for (const item of order.tickets) {
+    const purchasedTicketItems = order.tickets.filter(
+      (item: any) => item.type !== "Transportation"
+    );
+
+    const createdTickets = [];
+
+    for (const item of purchasedTicketItems) {
       for (let i = 0; i < item.quantity; i++) {
         const ticketCode = `EF-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+
         const ticket = await Ticket.create({
           eventId: order.eventId,
           userId: user._id,
@@ -53,17 +82,31 @@ export async function GET(req: Request) {
           price: item.price,
           code: ticketCode,
           status: "paid",
+          transportation: {
+            included: Boolean(transportItem),
+            pickup: order.transportation?.pickup || event.transportPickup || "",
+            departureTime:
+              order.transportation?.departureTime || event.transportDepartureTime,
+            vehicleType: order.transportation?.vehicleType || event.transportType || "Bus",
+          },
         });
-        tickets.push(ticket);
+
+        createdTickets.push(ticket);
       }
     }
 
-    // 4. Update Event Sold Count
-    await Event.findByIdAndUpdate(order.eventId, {
-      $inc: { soldTickets: tickets.length }
-    });
+    const update: any = {
+      $inc: {
+        soldTickets: createdTickets.length,
+      },
+    };
 
-    // 5. Redirect to success page
+    if (transportItem) {
+      update.$inc.transportBooked = Number(transportItem.quantity) || 0;
+    }
+
+    await Event.findByIdAndUpdate(order.eventId, update);
+
     return NextResponse.redirect(new URL(`/checkout/success?orderId=${orderId}`, req.url));
   } catch (error) {
     console.error("Verification error:", error);

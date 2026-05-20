@@ -12,15 +12,13 @@ export type PaymentStatus = "pending" | "successful" | "failed" | "refunded";
 export type LogisticsStatus = "pending" | "in-progress" | "completed";
 export type AccommodationStatus = "reserved" | "checked-in" | "checked-out" | "cancelled";
 export type InviteStatus = "pending" | "accepted" | "declined";
+export type TransportType = "Bus" | "Van" | "Shuttle" | "Private";
 
 export interface EventPayload {
   title: string;
   description?: string;
-  date: string;
-  startDate?: string;
-  endDate?: string;
-  startTime?: string;
-  endTime?: string;
+  startDate: string;
+  endDate: string;
   location?: string;
   category?: string;
   imageUrl?: string;
@@ -31,11 +29,18 @@ export interface EventPayload {
   }[];
   totalTickets: number;
   isFree: boolean;
+
   transportationAvailable: boolean;
   isTransportationFree: boolean;
   transportationPrice: number;
   transportationDetails?: string;
-  status?: "upcoming" | "ongoing" | "ended";
+  transportPickup?: string;
+  transportDepartureTime?: string;
+  transportSeats?: number;
+  transportBooked?: number;
+  transportType?: TransportType;
+
+  status?: "upcoming" | "live" | "ended";
 }
 
 export interface TicketPayload {
@@ -45,6 +50,12 @@ export interface TicketPayload {
   price: number;
   code: string;
   status: TicketStatus;
+  transportation?: {
+    included: boolean;
+    pickup?: string;
+    departureTime?: string;
+    vehicleType?: string;
+  };
 }
 
 export interface OrderPayload {
@@ -55,6 +66,15 @@ export interface OrderPayload {
     quantity: number;
     price: number;
   }[];
+  transportation?: {
+    included: boolean;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+    pickup?: string;
+    departureTime?: string;
+    vehicleType?: string;
+  };
   totalAmount: number;
   paymentStatus: PaymentStatus;
 }
@@ -81,7 +101,16 @@ export interface GuestPayload {
 export interface LogisticsPayload {
   eventId: string;
   title: string;
-  category: "Venue setup" | "Transportation" | "Equipment" | "Vendors" | "Security" | "Staff/volunteers" | "Food & drinks" | "Timeline/schedule" | string;
+  category:
+    | "Venue setup"
+    | "Transportation"
+    | "Equipment"
+    | "Vendors"
+    | "Security"
+    | "Staff/volunteers"
+    | "Food & drinks"
+    | "Timeline/schedule"
+    | string;
   description: string;
   status: LogisticsStatus;
   assignedStaff?: string;
@@ -106,20 +135,4 @@ export interface InvitePayload {
   eventId: string;
   email: string;
   status: InviteStatus;
-}
-
-export interface MerchandisePayload {
-  eventId: string;
-  name: string;
-  price: number;
-  stock: number;
-  sold: number;
-}
-
-export interface NotificationPayload {
-  userId: string;
-  title: string;
-  message: string;
-  isRead: boolean;
-  type: "info" | "success" | "warning" | "error";
 }

@@ -40,6 +40,10 @@ export default function EditEvent() {
     isTransportationFree: false,
     transportationPrice: 0,
     transportationDetails: "",
+    transportPickup: "",
+    transportDepartureTime: "",
+    transportSeats: 0,
+    transportType: "Bus",
     ticketTypes: [{ name: "Regular", price: 0, quantity: 0 }] as TicketTypeForm[],
   });
 
@@ -71,6 +75,10 @@ export default function EditEvent() {
           isTransportationFree: Boolean(event.isTransportationFree),
           transportationPrice: Number(event.transportationPrice) || 0,
           transportationDetails: event.transportationDetails || "",
+          transportPickup: event.transportPickup || "",
+          transportDepartureTime: event.transportDepartureTime ? event.transportDepartureTime.slice(0, 16) : "",
+          transportSeats: Number(event.transportSeats) || 0,
+          transportType: event.transportType || "Bus",
           ticketTypes: event.ticketTypes?.length
             ? event.ticketTypes
             : [{ name: "Regular", price: 0, quantity: 0 }],
@@ -135,6 +143,23 @@ export default function EditEvent() {
     if (new Date(form.endDate) <= new Date(form.startDate)) {
       setMessage("End date/time must be after start date/time.");
       return;
+    }
+
+    if (form.transportationAvailable) {
+      if (!form.transportPickup.trim()) {
+        setMessage("Transportation pickup location is required.");
+        return;
+      }
+
+      if (!form.transportDepartureTime) {
+        setMessage("Transportation departure time is required.");
+        return;
+      }
+
+      if (Number(form.transportSeats) <= 0) {
+        setMessage("Transportation seats must be greater than 0.");
+        return;
+      }
     }
 
     setLoading(true);
@@ -376,40 +401,121 @@ export default function EditEvent() {
               <input
                 type="checkbox"
                 checked={form.transportationAvailable}
-                onChange={(e) => setForm({ ...form, transportationAvailable: e.target.checked })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    transportationAvailable: e.target.checked,
+                  })
+                }
               />
             </label>
 
             {form.transportationAvailable && (
-              <div className="grid gap-5 sm:grid-cols-2">
-                <Input
-                  label="Transportation Price"
-                  type="number"
-                  min={0}
-                  disabled={form.isTransportationFree}
-                  value={form.transportationPrice}
-                  onChange={(e) => setForm({ ...form, transportationPrice: Number(e.target.value) })}
-                />
-
-                <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm font-bold text-white/70">
-                  <input
-                    type="checkbox"
-                    checked={form.isTransportationFree}
-                    onChange={(e) => setForm({ ...form, isTransportationFree: e.target.checked, transportationPrice: e.target.checked ? 0 : form.transportationPrice })}
+              <div className="space-y-5">
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Input
+                    label="Pickup Location"
+                    placeholder="e.g. Front gate, campus park, city mall"
+                    value={form.transportPickup}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        transportPickup: e.target.value,
+                      })
+                    }
                   />
-                  Transportation is free
-                </label>
 
-                <div className="sm:col-span-2 space-y-2">
+                  <Input
+                    label="Departure Time"
+                    type="datetime-local"
+                    value={form.transportDepartureTime}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        transportDepartureTime: e.target.value,
+                      })
+                    }
+                  />
+
+                  <Input
+                    label="Available Transport Seats"
+                    type="number"
+                    min={0}
+                    value={form.transportSeats}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        transportSeats: Number(e.target.value),
+                      })
+                    }
+                  />
+
+                  <Select
+                    label="Vehicle Type"
+                    value={form.transportType}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        transportType: e.target.value,
+                      })
+                    }
+                    options={[
+                      { label: "Bus", value: "Bus" },
+                      { label: "Van", value: "Van" },
+                      { label: "Shuttle", value: "Shuttle" },
+                      { label: "Private", value: "Private" },
+                    ]}
+                  />
+                </div>
+
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Input
+                    label="Transportation Price"
+                    type="number"
+                    min={0}
+                    disabled={form.isTransportationFree}
+                    value={form.transportationPrice}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        transportationPrice: Number(e.target.value),
+                      })
+                    }
+                  />
+
+                  <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm font-bold text-white/70">
+                    <input
+                      type="checkbox"
+                      checked={form.isTransportationFree}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          isTransportationFree: e.target.checked,
+                          transportationPrice: e.target.checked
+                            ? 0
+                            : form.transportationPrice,
+                        })
+                      }
+                    />
+                    Transportation is free
+                  </label>
+                </div>
+
+                <div className="space-y-2">
                   <label className="ml-1 text-xs font-black uppercase tracking-[0.2em] text-white/45">
                     Transportation Details
                   </label>
                   <textarea
                     rows={4}
                     className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white outline-none transition placeholder:text-white/20 focus:border-neon-cyan/50 focus:bg-white/[0.07]"
-                    placeholder="Pickup points, timing, buses, etc."
+                    placeholder="Pickup instructions, vehicle notes, route, contact person, etc."
                     value={form.transportationDetails}
-                    onChange={(e) => setForm({ ...form, transportationDetails: e.target.value })}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        transportationDetails: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>

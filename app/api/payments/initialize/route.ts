@@ -20,13 +20,21 @@ export async function POST(req: Request) {
       );
     }
 
-    const { eventId, ticketType, quantity, amount, includeTransportation, transportQuantity } = await req.json();
+    const {
+      eventId,
+      ticketType,
+      quantity,
+      amount,
+      includeTransportation,
+      transportQuantity,
+    } = await req.json();
 
     if (!eventId || !ticketType || !quantity) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
     }
 
     const event = await Event.findById(eventId);
+
     if (!event) {
       return NextResponse.json({ message: "Event not found" }, { status: 404 });
     }
@@ -38,24 +46,52 @@ export async function POST(req: Request) {
       );
     }
 
-    const selectedTicket = event.ticketTypes.find((ticket: any) => ticket.name === ticketType);
+    const selectedTicket = event.ticketTypes.find(
+      (ticket: any) => ticket.name === ticketType
+    );
+
     if (!selectedTicket) {
       return NextResponse.json({ message: "Invalid ticket type" }, { status: 400 });
     }
 
-    const orderQuantity = Number(quantity) || 1;
-    const available = Number(selectedTicket.quantity) || 0;
+    const orderQuantity = Math.max(1, Number(quantity) || 1);
+    const availableTickets = Number(selectedTicket.quantity || 0);
 
-    if (orderQuantity > available) {
+    if (orderQuantity > availableTickets) {
       return NextResponse.json({ message: "Not enough tickets available" }, { status: 400 });
     }
 
     const ticketPrice = event.isFree ? 0 : Number(selectedTicket.price) || 0;
-    const transportationQty = includeTransportation ? Number(transportQuantity || quantity) : 0;
-    const transportationTotal =
-      includeTransportation && event.transportationAvailable
-        ? (Number(event.transportationPrice) || 0) * transportationQty
-        : 0;
+
+    let transportationQty = 0;
+    let transportationUnitPrice = 0;
+    let transportationTotal = 0;
+
+    if (includeTransportation) {
+      if (!event.transportationAvailable) {
+        return NextResponse.json(
+          { message: "Transportation is not available for this event." },
+          { status: 400 }
+        );
+      }
+
+      transportationQty = Math.max(1, Number(transportQuantity || orderQuantity) || 1);
+      transportationUnitPrice = event.isTransportationFree
+        ? 0
+        : Number(event.transportationPrice) || 0;
+
+      const remainingSeats =
+        Number(event.transportSeats || 0) - Number(event.transportBooked || 0);
+
+      if (transportationQty > remainingSeats) {
+        return NextResponse.json(
+          { message: `Not enough transport seats. Only ${remainingSeats} seat(s) left.` },
+          { status: 400 }
+        );
+      }
+
+      transportationTotal = transportationUnitPrice * transportationQty;
+    }
 
     const calculatedAmount = ticketPrice * orderQuantity + transportationTotal;
 
@@ -78,7 +114,7 @@ export async function POST(req: Request) {
       tickets.push({
         type: "Transportation",
         quantity: transportationQty,
-        price: Number(event.transportationPrice) || 0,
+        price: transportationUnitPrice,
       });
     }
 
@@ -86,15 +122,26 @@ export async function POST(req: Request) {
       userId: user.id,
       eventId,
       tickets,
+      transportation: {
+        included: Boolean(includeTransportation && event.transportationAvailable),
+        quantity: transportationQty,
+        unitPrice: transportationUnitPrice,
+        total: transportationTotal,
+        pickup: event.transportPickup || "",
+        departureTime: event.transportDepartureTime,
+        vehicleType: event.transportType || "Bus",
+      },
       totalAmount: calculatedAmount,
       paymentStatus: calculatedAmount === 0 ? "successful" : "pending",
     });
 
-    // Mock payment flow. Replace with Paystack/Flutterwave initialization later.
     const mockAuthUrl = `/api/payments/verify?orderId=${order._id}&status=success`;
 
     return NextResponse.json({
-      authorization_url: calculatedAmount === 0 ? `/success?orderId=${order._id}` : mockAuthUrl,
+      authorization_url:
+        calculatedAmount === 0
+          ? `/api/payments/verify?orderId=${order._id}&status=success`
+          : mockAuthUrl,
       orderId: order._id,
     });
   } catch (error) {

@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { ArrowLeft, CreditCard, Loader2, Truck } from "lucide-react";
+import { ArrowLeft, Bus, Clock, CreditCard, Loader2, MapPin, Truck, Users } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { id } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -25,6 +25,7 @@ export default function CheckoutPage() {
     const checkAuthAndFetchEvent = async () => {
       try {
         const me = await fetch("/api/auth/me");
+
         if (!me.ok) {
           router.replace(`/login?redirect=/checkout/${id}`);
           return;
@@ -57,6 +58,7 @@ export default function CheckoutPage() {
         }
 
         setCurrentQuantity(urlQty);
+        setTransportQuantity(urlQty);
       } catch (error) {
         console.error(error);
       } finally {
@@ -69,8 +71,12 @@ export default function CheckoutPage() {
 
   const selectedTier = event?.ticketTypes?.find((ticket: any) => ticket.name === currentTier);
   const baseAmount = (Number(selectedTier?.price) || 0) * currentQuantity;
-  const transportAmount = includeTransportation ? (Number(event?.transportationPrice) || 0) * transportQuantity : 0;
+  const transportUnitPrice = event?.isTransportationFree ? 0 : Number(event?.transportationPrice || 0);
+  const transportAmount = includeTransportation ? transportUnitPrice * transportQuantity : 0;
   const totalAmount = baseAmount + transportAmount;
+  const transportSeatsLeft =
+    event?.transportSeatsLeft ??
+    Math.max(0, Number(event?.transportSeats || 0) - Number(event?.transportBooked || 0));
 
   const handlePayment = async () => {
     setPaying(true);
@@ -182,7 +188,11 @@ export default function CheckoutPage() {
                     <div className="flex w-fit items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-2">
                       <button
                         type="button"
-                        onClick={() => setCurrentQuantity(Math.max(1, currentQuantity - 1))}
+                        onClick={() => {
+                          const next = Math.max(1, currentQuantity - 1);
+                          setCurrentQuantity(next);
+                          if (!includeTransportation) setTransportQuantity(next);
+                        }}
                         className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white"
                       >
                         -
@@ -190,7 +200,11 @@ export default function CheckoutPage() {
                       <span className="w-8 text-center text-xl font-black text-white">{currentQuantity}</span>
                       <button
                         type="button"
-                        onClick={() => setCurrentQuantity(currentQuantity + 1)}
+                        onClick={() => {
+                          const next = currentQuantity + 1;
+                          setCurrentQuantity(next);
+                          if (!includeTransportation) setTransportQuantity(next);
+                        }}
                         className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white"
                       >
                         +
@@ -222,9 +236,31 @@ export default function CheckoutPage() {
                   <input
                     type="checkbox"
                     checked={includeTransportation}
-                    onChange={(e) => setIncludeTransportation(e.target.checked)}
+                    disabled={transportSeatsLeft <= 0}
+                    onChange={(e) => {
+                      setIncludeTransportation(e.target.checked);
+                      setTransportQuantity(currentQuantity);
+                    }}
                   />
                 </label>
+
+                <div className="mt-5 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-2">
+                  <p className="flex items-center gap-2 text-sm text-white/55">
+                    <Bus size={16} className="text-emerald-300" /> {event.transportType || "Bus"}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-white/55">
+                    <MapPin size={16} className="text-neon-cyan" /> {event.transportPickup || "Pickup not specified"}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-white/55">
+                    <Clock size={16} className="text-neon-purple" />
+                    {event.transportDepartureTime
+                      ? new Date(event.transportDepartureTime).toLocaleString()
+                      : "Departure not set"}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-white/55">
+                    <Users size={16} className="text-neon-pink" /> {transportSeatsLeft} seats left
+                  </p>
+                </div>
 
                 {includeTransportation && (
                   <div className="mt-5 flex items-center justify-between gap-5 border-t border-white/10 pt-5">
@@ -243,7 +279,7 @@ export default function CheckoutPage() {
                         <span className="w-8 text-center text-xl font-black text-white">{transportQuantity}</span>
                         <button
                           type="button"
-                          onClick={() => setTransportQuantity(transportQuantity + 1)}
+                          onClick={() => setTransportQuantity(Math.min(transportSeatsLeft, transportQuantity + 1))}
                           className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white"
                         >
                           +
@@ -288,7 +324,7 @@ export default function CheckoutPage() {
               fullWidth
               loading={paying}
               onClick={handlePayment}
-              disabled={!selectedTier}
+              disabled={!selectedTier || (includeTransportation && transportQuantity > transportSeatsLeft)}
             >
               Pay Now
             </Button>
@@ -296,5 +332,19 @@ export default function CheckoutPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-night">
+          <Loader2 className="h-10 w-10 animate-spin text-neon-purple" />
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   );
 }

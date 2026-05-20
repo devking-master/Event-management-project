@@ -8,8 +8,14 @@ export interface ITicket extends Document {
   guestEmail: string;
   type: TicketType;
   price: number;
-  code: string; // Unique ticket code/QR value
+  code: string;
   status: TicketStatus;
+  transportation?: {
+    included: boolean;
+    pickup?: string;
+    departureTime?: Date;
+    vehicleType?: string;
+  };
 }
 
 const TicketSchema = new Schema<ITicket>(
@@ -21,11 +27,22 @@ const TicketSchema = new Schema<ITicket>(
     type: { type: String, required: true },
     price: { type: Number, required: true },
     code: { type: String, required: true, unique: true },
-    status: { type: String, enum: ["pending", "paid", "checked-in", "cancelled"], default: "pending" },
+    status: {
+      type: String,
+      enum: ["pending", "paid", "checked-in", "cancelled"],
+      default: "pending",
+    },
+    transportation: {
+      included: { type: Boolean, default: false },
+      pickup: String,
+      departureTime: Date,
+      vehicleType: String,
+    },
   },
   { timestamps: true }
 );
 
-const Ticket: Model<ITicket> = mongoose.models.Ticket || mongoose.model<ITicket>("Ticket", TicketSchema);
+const Ticket: Model<ITicket> =
+  mongoose.models.Ticket || mongoose.model<ITicket>("Ticket", TicketSchema);
 
 export default Ticket;

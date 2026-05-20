@@ -9,6 +9,15 @@ export interface IOrder extends Document {
     quantity: number;
     price: number;
   }[];
+  transportation?: {
+    included: boolean;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+    pickup?: string;
+    departureTime?: Date;
+    vehicleType?: string;
+  };
   totalAmount: number;
   paymentStatus: PaymentStatus;
 }
@@ -17,19 +26,36 @@ const OrderSchema = new Schema<IOrder>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     eventId: { type: Schema.Types.ObjectId, ref: "Event", required: true },
+
     tickets: [
       {
-        type: { type: String, required: true }, // Removed enum here to allow all TicketType values from TypeScript
+        type: { type: String, required: true },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
       },
     ],
+
+    transportation: {
+      included: { type: Boolean, default: false },
+      quantity: { type: Number, default: 0 },
+      unitPrice: { type: Number, default: 0 },
+      total: { type: Number, default: 0 },
+      pickup: String,
+      departureTime: Date,
+      vehicleType: String,
+    },
+
     totalAmount: { type: Number, required: true },
-    paymentStatus: { type: String, enum: ["pending", "successful", "failed", "refunded"], default: "pending" },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "successful", "failed", "refunded"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );
 
-const Order: Model<IOrder> = mongoose.models.Order || mongoose.model<IOrder>("Order", OrderSchema);
+const Order: Model<IOrder> =
+  mongoose.models.Order || mongoose.model<IOrder>("Order", OrderSchema);
 
 export default Order;

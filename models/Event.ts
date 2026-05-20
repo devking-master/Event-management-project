@@ -9,19 +9,28 @@ export interface IEvent extends Document {
   location?: string;
   category?: string;
   imageUrl?: string;
+
   ticketTypes: {
     name: TicketType;
     price: number;
     quantity: number;
   }[];
+
   totalTickets: number;
   soldTickets: number;
   organizer: mongoose.Types.ObjectId;
   isFree: boolean;
+
   transportationAvailable: boolean;
   isTransportationFree: boolean;
   transportationPrice: number;
   transportationDetails?: string;
+  transportPickup?: string;
+  transportDepartureTime?: Date;
+  transportSeats: number;
+  transportBooked: number;
+  transportType?: "Bus" | "Van" | "Shuttle" | "Private";
+
   status?: "upcoming" | "live" | "ended";
 }
 
@@ -30,8 +39,6 @@ const EventSchema = new Schema<IEvent>(
     title: { type: String, required: true, trim: true },
     description: String,
 
-    // Use only these two fields for event timing.
-    // They contain both date and time from <input type="datetime-local" />.
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
 
@@ -52,13 +59,22 @@ const EventSchema = new Schema<IEvent>(
 
     organizer: { type: Schema.Types.ObjectId, ref: "User", required: true },
 
-    isFree: { type: Boolean, default: false },
     transportationAvailable: { type: Boolean, default: false },
     isTransportationFree: { type: Boolean, default: false },
     transportationPrice: { type: Number, default: 0 },
     transportationDetails: String,
+    transportPickup: String,
+    transportDepartureTime: Date,
+    transportSeats: { type: Number, default: 0 },
+    transportBooked: { type: Number, default: 0 },
+    transportType: {
+      type: String,
+      enum: ["Bus", "Van", "Shuttle", "Private"],
+      default: "Bus",
+    },
 
-    // Stored status is optional. API responses calculate the real status from startDate/endDate.
+    isFree: { type: Boolean, default: false },
+
     status: { type: String, enum: ["upcoming", "live", "ended"], default: "upcoming" },
   },
   { timestamps: true }

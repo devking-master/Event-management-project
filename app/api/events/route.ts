@@ -23,6 +23,10 @@ type EventBody = {
   isTransportationFree?: boolean;
   transportationPrice?: number;
   transportationDetails?: string;
+  transportPickup?: string;
+  transportDepartureTime?: string;
+  transportSeats?: number;
+  transportType?: "Bus" | "Van" | "Shuttle" | "Private";
   ticketTypes?: TicketInput[];
 };
 
@@ -42,6 +46,7 @@ function eventWithComputedStatus(event: any) {
   return {
     ...obj,
     status: getEventStatus(startDate, endDate),
+    transportSeatsLeft: Math.max(0, Number(obj.transportSeats || 0) - Number(obj.transportBooked || 0)),
   };
 }
 
@@ -78,11 +83,10 @@ export async function GET(req: Request) {
 
       query.organizer = user.id;
     } else {
-      // Public explore page: only show events that have not ended.
       query.endDate = { $gt: new Date() };
     }
 
-    let events = await Event.find(query)
+    const events = await Event.find(query)
       .populate("organizer", "name email")
       .sort({ startDate: 1 });
 
@@ -141,6 +145,20 @@ export async function POST(req: Request) {
       );
     }
 
+    if (body.transportationAvailable) {
+      if (!body.transportPickup?.trim()) {
+        return NextResponse.json({ message: "Transportation pickup location is required" }, { status: 400 });
+      }
+
+      if (!body.transportDepartureTime) {
+        return NextResponse.json({ message: "Transportation departure time is required" }, { status: 400 });
+      }
+
+      if (Number(body.transportSeats) <= 0) {
+        return NextResponse.json({ message: "Transportation seats must be greater than 0" }, { status: 400 });
+      }
+    }
+
     const ticketTypes = body.ticketTypes.map((ticket) => ({
       name: ticket.name,
       price: body.isFree ? 0 : Number(ticket.price) || 0,
@@ -158,10 +176,23 @@ export async function POST(req: Request) {
       category: body.category,
       imageUrl: body.imageUrl || "",
       isFree: Boolean(body.isFree),
+
       transportationAvailable: Boolean(body.transportationAvailable),
       isTransportationFree: Boolean(body.isTransportationFree),
-      transportationPrice: Number(body.transportationPrice) || 0,
+      transportationPrice:
+        body.transportationAvailable && !body.isTransportationFree
+          ? Number(body.transportationPrice) || 0
+          : 0,
       transportationDetails: body.transportationDetails,
+      transportPickup: body.transportationAvailable ? body.transportPickup : "",
+      transportDepartureTime:
+        body.transportationAvailable && body.transportDepartureTime
+          ? new Date(body.transportDepartureTime)
+          : undefined,
+      transportSeats: body.transportationAvailable ? Number(body.transportSeats) || 0 : 0,
+      transportBooked: 0,
+      transportType: body.transportationAvailable ? body.transportType || "Bus" : "Bus",
+
       ticketTypes,
       totalTickets,
       soldTickets: 0,
