@@ -66,7 +66,7 @@ export default function Button({
       ) : (
         <>
           {Icon ? <Icon size={18} className="shrink-0" /> : null}
-          {children ? <span className="truncate">{children}</span> : null}
+          {children ? <span className="inline-flex items-center gap-2 truncate">{children}</span> : null}
         </>
       )}
     </motion.button>

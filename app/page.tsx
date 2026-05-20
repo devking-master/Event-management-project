@@ -60,9 +60,11 @@ export default function LandingPage() {
             className="mt-12 flex flex-col items-center justify-center gap-6 sm:flex-row"
           >
             <Link href="/events">
-              <Button size="xl" variant="neon" className="group">
+              <span>
+                <Button size="xl" variant="neon" className="group whitespace-nowrap">
                 Explore Events <ArrowRight className="transition-transform group-hover:translate-x-1" />
               </Button>
+              </span>
             </Link>
           </motion.div>
         </div>
