@@ -437,7 +437,7 @@ function CheckoutContent() {
 
       {paymentOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 px-4 backdrop-blur-md">
-          <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-[2rem] border border-white/10 bg-[#070712] shadow-2xl shadow-neon-purple/20">
+          <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-[2rem] border border-white/10 bg-[#070712] shadow-2xl shadow-neon-purple/20 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-neon-purple/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-neon-purple/70">
             <div className="flex items-center justify-between border-b border-white/10 p-5 sm:p-6 sticky top-0 bg-[#070712]">
               <div className="flex items-center gap-3">
                 <div className="grid h-12 w-12 place-items-center rounded-2xl bg-neon-purple/10 text-neon-purple">
