@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { Activity, Calendar, MapPin, Ticket, Truck, Bus, Clock, Users } from "lucide-react";
+import { Activity, Calendar, MapPin, Ticket, Truck, BedDouble, Bus, Clock, Users } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 
@@ -28,6 +28,17 @@ type EventItem = {
   transportBooked?: number;
   transportSeatsLeft?: number;
   transportType?: "Bus" | "Van" | "Shuttle" | "Private";
+  accommodationAvailable?: boolean;
+  isAccommodationFree?: boolean;
+  accommodationPrice?: number;
+  accommodationName?: string;
+  accommodationAddress?: string;
+  accommodationCheckIn?: string;
+  accommodationCheckOut?: string;
+  accommodationRooms?: number;
+  accommodationBooked?: number;
+  accommodationRoomsLeft?: number;
+  accommodationDetails?: string;
 };
 
 function formatDate(value?: string) {
@@ -108,6 +119,10 @@ export default function EventDetails() {
   const transportSeatsLeft =
     event.transportSeatsLeft ??
     Math.max(0, Number(event.transportSeats || 0) - Number(event.transportBooked || 0));
+
+  const accommodationRoomsLeft =
+    event.accommodationRoomsLeft ??
+    Math.max(0, Number(event.accommodationRooms || 0) - Number(event.accommodationBooked || 0));
 
   return (
     <main className="min-h-screen bg-night pb-24">
@@ -209,6 +224,47 @@ export default function EventDetails() {
               {event.transportationDetails && (
                 <p className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-white/55">
                   {event.transportationDetails}
+                </p>
+              )}
+            </Card>
+          )}
+
+          {event.accommodationAvailable && (
+            <Card animate={false}>
+              <div className="mb-5 flex items-center gap-3">
+                <BedDouble className="text-amber-300" />
+                <h2 className="text-2xl font-black">Accommodation</h2>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <BedDouble className="mb-3 text-amber-300" />
+                  <p className="text-xs font-black uppercase tracking-widest text-white/35">Hotel / Lodge</p>
+                  <p className="mt-1 font-bold text-white">{event.accommodationName || "Not specified"}</p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <MapPin className="mb-3 text-neon-cyan" />
+                  <p className="text-xs font-black uppercase tracking-widest text-white/35">Address</p>
+                  <p className="mt-1 font-bold text-white">{event.accommodationAddress || "Not specified"}</p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <Clock className="mb-3 text-neon-purple" />
+                  <p className="text-xs font-black uppercase tracking-widest text-white/35">Check-in</p>
+                  <p className="mt-1 font-bold text-white">{formatDate(event.accommodationCheckIn)}</p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <Users className="mb-3 text-neon-pink" />
+                  <p className="text-xs font-black uppercase tracking-widest text-white/35">Rooms Left</p>
+                  <p className="mt-1 font-bold text-white">{accommodationRoomsLeft}</p>
+                </div>
+              </div>
+
+              {event.accommodationDetails && (
+                <p className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-white/55">
+                  {event.accommodationDetails}
                 </p>
               )}
             </Card>

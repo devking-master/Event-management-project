@@ -13,6 +13,7 @@ import {
   Lock,
   MapPin,
   Truck,
+  BedDouble,
   User,
   Users,
   X,
@@ -68,12 +69,14 @@ function CheckoutContent() {
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
   const [includeTransportation, setIncludeTransportation] = useState(false);
+  const [includeAccommodation, setIncludeAccommodation] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [cardError, setCardError] = useState("");
 
   const [currentTier, setCurrentTier] = useState("");
   const [currentQuantity, setCurrentQuantity] = useState(1);
   const [transportQuantity, setTransportQuantity] = useState(1);
+  const [accommodationQuantity, setAccommodationQuantity] = useState(1);
 
   const [cardForm, setCardForm] = useState<CardForm>({
     cardName: "",
@@ -134,13 +137,19 @@ function CheckoutContent() {
   const baseAmount = (Number(selectedTier?.price) || 0) * currentQuantity;
   const transportUnitPrice = event?.isTransportationFree ? 0 : Number(event?.transportationPrice || 0);
   const transportAmount = includeTransportation ? transportUnitPrice * transportQuantity : 0;
-  const totalAmount = baseAmount + transportAmount;
+  const accommodationUnitPrice = event?.isAccommodationFree ? 0 : Number(event?.accommodationPrice || 0);
+  const accommodationAmount = includeAccommodation ? accommodationUnitPrice * accommodationQuantity : 0;
+  const totalAmount = baseAmount + transportAmount + accommodationAmount;
 
   const ticketSeatsLeft = Number(selectedTier?.quantity || 0);
 
   const transportSeatsLeft =
     event?.transportSeatsLeft ??
     Math.max(0, Number(event?.transportSeats || 0) - Number(event?.transportBooked || 0));
+
+  const accommodationRoomsLeft =
+    event?.accommodationRoomsLeft ??
+    Math.max(0, Number(event?.accommodationRooms || 0) - Number(event?.accommodationBooked || 0));
 
   const openPaymentModal = () => {
     if (!selectedTier) {
@@ -155,6 +164,11 @@ function CheckoutContent() {
 
     if (includeTransportation && transportQuantity > transportSeatsLeft) {
       alert(`Only ${transportSeatsLeft} transport seat(s) available.`);
+      return;
+    }
+
+    if (includeAccommodation && accommodationQuantity > accommodationRoomsLeft) {
+      alert(`Only ${accommodationRoomsLeft} accommodation room(s) available.`);
       return;
     }
 
@@ -186,6 +200,8 @@ function CheckoutContent() {
           quantity: currentQuantity,
           includeTransportation,
           transportQuantity: includeTransportation ? transportQuantity : 0,
+          includeAccommodation,
+          accommodationQuantity: includeAccommodation ? accommodationQuantity : 0,
           amount: totalAmount,
         }),
       });
@@ -317,6 +333,81 @@ function CheckoutContent() {
                 </div>
               </div>
             </div>
+
+            {event?.accommodationAvailable && (
+              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+                <label className="flex items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <BedDouble className="mt-1 text-amber-300" />
+                    <div>
+                      <p className="font-black text-white">Add Accommodation</p>
+                      <p className="mt-1 text-sm text-white/45">
+                        {event.accommodationDetails || "Accommodation is available for this event."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <input
+                    type="checkbox"
+                    checked={includeAccommodation}
+                    disabled={accommodationRoomsLeft <= 0}
+                    onChange={(e) => {
+                      setIncludeAccommodation(e.target.checked);
+                      setAccommodationQuantity(1);
+                    }}
+                  />
+                </label>
+
+                <div className="mt-5 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-2">
+                  <p className="flex items-center gap-2 text-sm text-white/55">
+                    <BedDouble size={16} className="text-amber-300" /> {event.accommodationName || "Accommodation"}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-white/55">
+                    <MapPin size={16} className="text-neon-cyan" /> {event.accommodationAddress || "Address not specified"}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-white/55">
+                    <Clock size={16} className="text-neon-purple" />
+                    {event.accommodationCheckIn
+                      ? new Date(event.accommodationCheckIn).toLocaleString()
+                      : "Check-in not set"}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-white/55">
+                    <Users size={16} className="text-neon-pink" /> {accommodationRoomsLeft} rooms left
+                  </p>
+                </div>
+
+                {includeAccommodation && (
+                  <div className="mt-5 flex items-center justify-between gap-5 border-t border-white/10 pt-5">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-widest text-white/35">
+                        Rooms
+                      </p>
+                      <div className="mt-3 flex w-fit items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-2">
+                        <button
+                          type="button"
+                          onClick={() => setAccommodationQuantity(Math.max(1, accommodationQuantity - 1))}
+                          className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white"
+                        >
+                          -
+                        </button>
+                        <span className="w-8 text-center text-xl font-black text-white">{accommodationQuantity}</span>
+                        <button
+                          type="button"
+                          onClick={() => setAccommodationQuantity(Math.min(accommodationRoomsLeft, accommodationQuantity + 1))}
+                          className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    <p className="text-2xl font-black text-amber-300">
+                      ₦{accommodationAmount.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {event?.transportationAvailable && (
               <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">

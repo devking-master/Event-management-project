@@ -18,6 +18,16 @@ export interface IOrder extends Document {
     departureTime?: Date;
     vehicleType?: string;
   };
+  accommodation?: {
+    included: boolean;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+    name?: string;
+    address?: string;
+    checkIn?: Date;
+    checkOut?: Date;
+  };
   totalAmount: number;
   paymentStatus: PaymentStatus;
 }
@@ -43,6 +53,17 @@ const OrderSchema = new Schema<IOrder>(
       pickup: String,
       departureTime: Date,
       vehicleType: String,
+    },
+
+    accommodation: {
+      included: { type: Boolean, default: false },
+      quantity: { type: Number, default: 0 },
+      unitPrice: { type: Number, default: 0 },
+      total: { type: Number, default: 0 },
+      name: String,
+      address: String,
+      checkIn: Date,
+      checkOut: Date,
     },
 
     totalAmount: { type: Number, required: true },

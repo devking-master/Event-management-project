@@ -19,6 +19,7 @@ function eventWithComputedStatus(event: any) {
     ...obj,
     status: getEventStatus(new Date(obj.startDate), new Date(obj.endDate)),
     transportSeatsLeft: Math.max(0, Number(obj.transportSeats || 0) - Number(obj.transportBooked || 0)),
+    accommodationRoomsLeft: Math.max(0, Number(obj.accommodationRooms || 0) - Number(obj.accommodationBooked || 0)),
   };
 }
 
@@ -87,6 +88,31 @@ export async function PUT(
       );
     }
 
+    if (body.accommodationAvailable) {
+      if (!body.accommodationName?.trim()) {
+        return NextResponse.json({ message: "Accommodation name is required" }, { status: 400 });
+      }
+
+      if (!body.accommodationAddress?.trim()) {
+        return NextResponse.json({ message: "Accommodation address is required" }, { status: 400 });
+      }
+
+      if (!body.accommodationCheckIn || !body.accommodationCheckOut) {
+        return NextResponse.json({ message: "Accommodation check-in and check-out dates are required" }, { status: 400 });
+      }
+
+      if (new Date(body.accommodationCheckOut) <= new Date(body.accommodationCheckIn)) {
+        return NextResponse.json({ message: "Accommodation check-out must be after check-in" }, { status: 400 });
+      }
+
+      if (Number(body.accommodationRooms) < Number(existingEvent.accommodationBooked || 0)) {
+        return NextResponse.json(
+          { message: "Accommodation rooms cannot be less than already booked rooms" },
+          { status: 400 }
+        );
+      }
+    }
+
     if (body.transportationAvailable) {
       if (!body.transportPickup?.trim()) {
         return NextResponse.json({ message: "Transportation pickup location is required" }, { status: 400 });
@@ -143,6 +169,25 @@ export async function PUT(
             : undefined,
         transportSeats: body.transportationAvailable ? Number(body.transportSeats) || 0 : 0,
         transportType: body.transportationAvailable ? body.transportType || "Bus" : "Bus",
+
+        accommodationAvailable: Boolean(body.accommodationAvailable),
+        isAccommodationFree: Boolean(body.isAccommodationFree),
+        accommodationPrice:
+          body.accommodationAvailable && !body.isAccommodationFree
+            ? Number(body.accommodationPrice) || 0
+            : 0,
+        accommodationName: body.accommodationAvailable ? body.accommodationName : "",
+        accommodationAddress: body.accommodationAvailable ? body.accommodationAddress : "",
+        accommodationCheckIn:
+          body.accommodationAvailable && body.accommodationCheckIn
+            ? new Date(body.accommodationCheckIn)
+            : undefined,
+        accommodationCheckOut:
+          body.accommodationAvailable && body.accommodationCheckOut
+            ? new Date(body.accommodationCheckOut)
+            : undefined,
+        accommodationRooms: body.accommodationAvailable ? Number(body.accommodationRooms) || 0 : 0,
+        accommodationDetails: body.accommodationDetails,
 
         ticketTypes,
         totalTickets,

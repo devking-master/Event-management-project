@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, ChevronLeft, Info, Layers, MapPin, Plus, Trash2, Truck, Upload, X, AlertCircle } from "lucide-react";
+import { Calendar, ChevronLeft, Info, Layers, MapPin, Plus, Trash2, Truck, BedDouble, Upload, X, AlertCircle } from "lucide-react";
 import { useCloudinaryUpload } from "@/lib/useCloudinaryUpload";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -41,6 +41,15 @@ export default function CreateEvent() {
     transportDepartureTime: "",
     transportSeats: 0,
     transportType: "Bus",
+    accommodationAvailable: false,
+    isAccommodationFree: false,
+    accommodationPrice: 0,
+    accommodationName: "",
+    accommodationAddress: "",
+    accommodationCheckIn: "",
+    accommodationCheckOut: "",
+    accommodationRooms: 0,
+    accommodationDetails: "",
     ticketTypes: [{ name: "Regular", price: 0, quantity: 0 }] as TicketTypeForm[],
   });
 
@@ -110,6 +119,33 @@ export default function CreateEvent() {
       }
     }
 
+    if (form.accommodationAvailable) {
+      if (!form.accommodationName.trim()) {
+        setMessage("Accommodation name is required.");
+        return;
+      }
+
+      if (!form.accommodationAddress.trim()) {
+        setMessage("Accommodation address is required.");
+        return;
+      }
+
+      if (!form.accommodationCheckIn || !form.accommodationCheckOut) {
+        setMessage("Accommodation check-in and check-out dates are required.");
+        return;
+      }
+
+      if (new Date(form.accommodationCheckOut) <= new Date(form.accommodationCheckIn)) {
+        setMessage("Accommodation check-out must be after check-in.");
+        return;
+      }
+
+      if (Number(form.accommodationRooms) <= 0) {
+        setMessage("Accommodation rooms must be greater than 0.");
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
@@ -151,7 +187,7 @@ export default function CreateEvent() {
   };
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="mx-auto max-w-7xl space-y-7 pb-20">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <button
@@ -164,7 +200,7 @@ export default function CreateEvent() {
           <h1 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
             Create <span className="text-neon-purple">Event</span>
           </h1>
-          <p className="mt-2 text-white/45">Use one start date/time and one end date/time.</p>
+          <p className="mt-2 text-white/45">Fill the important details first. Add extras only when needed.</p>
         </div>
       </header>
 
@@ -175,14 +211,14 @@ export default function CreateEvent() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1.55fr_0.9fr]">
-        <div className="space-y-6">
-          <Card className="space-y-6" animate={false}>
+      <form onSubmit={handleSubmit} className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.75fr)]">
+        <div className="space-y-4">
+          <Card className="space-y-4" animate={false}>
             <div className="flex items-center gap-3 border-b border-white/10 pb-5">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-neon-purple/10 text-neon-purple">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-neon-purple/10 text-neon-purple">
                 <Info size={22} />
               </div>
-              <h2 className="text-2xl font-black">Event Information</h2>
+              <h2 className="text-xl font-black sm:text-2xl">Event Information</h2>
             </div>
 
             <Input
@@ -198,15 +234,15 @@ export default function CreateEvent() {
                 Event Description
               </label>
               <textarea
-                rows={6}
-                className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white outline-none transition placeholder:text-white/20 focus:border-neon-purple/50 focus:bg-white/[0.07]"
+                rows={3}
+                className="w-full min-h-28 rounded-2xl border border-white/10 bg-white/[0.035] p-3.5 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-neon-purple/50 focus:bg-white/[0.06]"
                 placeholder="Tell users about your event..."
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
               />
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2">
               <Input
                 label="Start Date & Time"
                 type="datetime-local"
@@ -226,7 +262,7 @@ export default function CreateEvent() {
               />
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2">
               <Input
                 label="Location"
                 placeholder="Venue or City"
@@ -251,17 +287,17 @@ export default function CreateEvent() {
             </div>
           </Card>
 
-          <Card className="space-y-6" animate={false}>
+          <Card className="space-y-4" animate={false}>
             <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-neon-cyan/10 text-neon-cyan">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-neon-cyan/10 text-neon-cyan">
                   <Layers size={22} />
                 </div>
-                <h2 className="text-2xl font-black">Tickets</h2>
+                <h2 className="text-xl font-black sm:text-2xl">Tickets</h2>
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-bold uppercase tracking-widest text-white/50">
+                <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 text-xs font-bold uppercase tracking-widest text-white/50">
                   Free Event
                   <input
                     type="checkbox"
@@ -289,7 +325,7 @@ export default function CreateEvent() {
 
             <div className="space-y-4">
               {form.ticketTypes.map((ticket, index) => (
-                <div key={index} className="grid gap-4 rounded-3xl border border-white/10 bg-white/[0.03] p-4 sm:grid-cols-[1fr_1fr_1fr_auto]">
+                <div key={index} className="grid gap-4 rounded-2xl border border-white/10 bg-white/[0.025] p-4 md:grid-cols-2 xl:grid-cols-[1fr_0.8fr_0.8fr_auto]">
                   <Select
                     label="Type"
                     value={ticket.name}
@@ -328,15 +364,15 @@ export default function CreateEvent() {
             </div>
           </Card>
 
-          <Card className="space-y-5" animate={false}>
+          <Card className="space-y-4" animate={false}>
             <div className="flex items-center gap-3 border-b border-white/10 pb-5">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-300">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-500/10 text-emerald-300">
                 <Truck size={22} />
               </div>
-              <h2 className="text-2xl font-black">Transportation</h2>
+              <h2 className="text-xl font-black sm:text-2xl">Transportation</h2>
             </div>
 
-            <label className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <label className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3.5">
               <span className="font-bold text-white">Transportation available?</span>
               <input
                 type="checkbox"
@@ -351,8 +387,8 @@ export default function CreateEvent() {
             </label>
 
             {form.transportationAvailable && (
-              <div className="space-y-5">
-                <div className="grid gap-5 sm:grid-cols-2">
+              <div className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
                   <Input
                     label="Pickup Location"
                     placeholder="e.g. Front gate, campus park, city mall"
@@ -408,7 +444,7 @@ export default function CreateEvent() {
                   />
                 </div>
 
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   <Input
                     label="Transportation Price"
                     type="number"
@@ -423,7 +459,7 @@ export default function CreateEvent() {
                     }
                   />
 
-                  <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm font-bold text-white/70">
+                  <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3.5 text-sm font-bold text-white/70">
                     <input
                       type="checkbox"
                       checked={form.isTransportationFree}
@@ -446,8 +482,8 @@ export default function CreateEvent() {
                     Transportation Details
                   </label>
                   <textarea
-                    rows={4}
-                    className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white outline-none transition placeholder:text-white/20 focus:border-neon-cyan/50 focus:bg-white/[0.07]"
+                    rows={3}
+                    className="w-full min-h-24 rounded-2xl border border-white/10 bg-white/[0.035] p-3.5 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-neon-cyan/50 focus:bg-white/[0.06]"
                     placeholder="Pickup instructions, vehicle notes, route, contact person, etc."
                     value={form.transportationDetails}
                     onChange={(e) =>
@@ -461,16 +497,161 @@ export default function CreateEvent() {
               </div>
             )}
           </Card>
+
+          <Card className="space-y-4" animate={false}>
+            <div className="flex items-center gap-3 border-b border-white/10 pb-5">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-500/10 text-amber-300">
+                <BedDouble size={22} />
+              </div>
+              <div>
+                <h2 className="text-xl font-black sm:text-2xl">Accommodation</h2>
+                <p className="text-sm text-white/35">Optional stay package for attendees</p>
+              </div>
+            </div>
+
+            <label className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3.5">
+              <span className="font-bold text-white">Enable Accommodation</span>
+              <input
+                type="checkbox"
+                checked={form.accommodationAvailable}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    accommodationAvailable: e.target.checked,
+                  })
+                }
+              />
+            </label>
+
+            {form.accommodationAvailable && (
+              <div className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Input
+                    label="Hotel / Lodge Name"
+                    placeholder="e.g. Grand Palace Hotel"
+                    value={form.accommodationName}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        accommodationName: e.target.value,
+                      })
+                    }
+                  />
+
+                  <div className="md:col-span-2">
+                    <Input
+                      label="Accommodation Address"
+                      placeholder="e.g. 10 Island Road, Lagos"
+                      value={form.accommodationAddress}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          accommodationAddress: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <Input
+                    label="Check-in Date & Time"
+                    type="datetime-local"
+                    value={form.accommodationCheckIn}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        accommodationCheckIn: e.target.value,
+                      })
+                    }
+                  />
+
+                  <Input
+                    label="Check-out Date & Time"
+                    type="datetime-local"
+                    value={form.accommodationCheckOut}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        accommodationCheckOut: e.target.value,
+                      })
+                    }
+                  />
+
+                  <Input
+                    label="Available Rooms"
+                    type="number"
+                    min={0}
+                    value={form.accommodationRooms}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        accommodationRooms: Number(e.target.value),
+                      })
+                    }
+                  />
+
+                  <Input
+                    label="Accommodation Price Per Room"
+                    type="number"
+                    min={0}
+                    disabled={form.isAccommodationFree}
+                    value={form.accommodationPrice}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        accommodationPrice: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+
+                <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3.5 text-sm font-bold text-white/70">
+                  <input
+                    type="checkbox"
+                    checked={form.isAccommodationFree}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        isAccommodationFree: e.target.checked,
+                        accommodationPrice: e.target.checked
+                          ? 0
+                          : form.accommodationPrice,
+                      })
+                    }
+                  />
+                  Accommodation is free
+                </label>
+
+                <div className="space-y-2">
+                  <label className="ml-1 text-xs font-black uppercase tracking-[0.2em] text-white/45">
+                    Accommodation Details
+                  </label>
+                  <textarea
+                    rows={3}
+                    className="w-full min-h-24 rounded-2xl border border-white/10 bg-white/[0.035] p-3.5 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-neon-cyan/50 focus:bg-white/[0.06]"
+                    placeholder="Room type, breakfast, hotel rules, contact person, distance from venue, etc."
+                    value={form.accommodationDetails}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        accommodationDetails: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            )}
+          </Card>
         </div>
 
-        <aside className="space-y-6">
-          <Card className="space-y-5" animate={false}>
-            <h2 className="text-2xl font-black">Event Image</h2>
+        <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
 
-            <label className="group flex min-h-[260px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-white/15 bg-white/[0.03] text-center transition hover:border-neon-purple/40">
+          <Card className="space-y-4" animate={false}>
+            <h2 className="text-xl font-black sm:text-2xl">Event Image</h2>
+
+            <label className="group flex min-h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-white/15 bg-white/[0.03] text-center transition hover:border-neon-purple/40">
               {imagePreview ? (
-                <div className="relative h-full min-h-[260px] w-full">
-                  <img src={imagePreview} alt="Preview" className="h-full min-h-[260px] w-full object-cover" />
+                <div className="relative h-full min-h-[220px] w-full">
+                  <img src={imagePreview} alt="Preview" className="h-full min-h-[220px] w-full object-cover" />
                   <button
                     type="button"
                     onClick={(e) => {
@@ -485,7 +666,7 @@ export default function CreateEvent() {
                 </div>
               ) : (
                 <>
-                  <Upload className="mb-4 text-neon-purple" size={42} />
+                  <Upload className="mb-4 text-neon-purple" size={36} />
                   <p className="font-black text-white">Upload Event Banner</p>
                   <p className="mt-2 max-w-xs text-sm text-white/35">
                     Image will upload to Cloudinary, then the URL will be saved in MongoDB.

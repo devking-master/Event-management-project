@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
   Bus,
+  BedDouble,
   Calendar,
   Clock,
   Download,
@@ -46,7 +47,7 @@ export default function MyTickets() {
             My <span className="text-neon-purple">Tickets</span>
           </h1>
           <p className="mt-2 text-lg text-white/40">
-            Your purchased tickets and transportation details.
+            Your purchased tickets and transportation and accommodation details.
           </p>
         </div>
 
@@ -103,6 +104,7 @@ export default function MyTickets() {
             tickets.map((ticket: any, idx: number) => {
               const event = ticket.eventId;
               const hasTransport = Boolean(ticket.transportation?.included);
+              const hasAccommodation = Boolean(ticket.accommodation?.included);
 
               return (
                 <motion.div
@@ -159,6 +161,37 @@ export default function MyTickets() {
                           <QrCode size={40} className="text-ink" />
                         </div>
                       </div>
+
+                      {hasAccommodation && (
+                        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4">
+                          <div className="mb-3 flex items-center gap-2">
+                            <BedDouble size={18} className="text-amber-300" />
+                            <p className="text-sm font-black text-amber-300">
+                              Accommodation Included
+                            </p>
+                          </div>
+
+                          <div className="space-y-2 text-sm text-white/55">
+                            <p className="flex gap-2">
+                              <BedDouble size={15} className="shrink-0 text-amber-300" />
+                              Hotel: {ticket.accommodation?.name || "Not specified"}
+                            </p>
+
+                            <p className="flex gap-2">
+                              <MapPin size={15} className="shrink-0 text-neon-cyan" />
+                              Address: {ticket.accommodation?.address || "Not specified"}
+                            </p>
+
+                            <p className="flex gap-2">
+                              <Clock size={15} className="shrink-0 text-neon-purple" />
+                              Check-in:{" "}
+                              {ticket.accommodation?.checkIn
+                                ? new Date(ticket.accommodation.checkIn).toLocaleString()
+                                : "Not specified"}
+                            </p>
+                          </div>
+                        </div>
+                      )}
 
                       {hasTransport && (
                         <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">

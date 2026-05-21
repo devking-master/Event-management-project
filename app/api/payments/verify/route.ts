@@ -36,13 +36,27 @@ export async function GET(req: Request) {
     }
 
     const purchasedTicketItems = order.tickets.filter(
-      (item: any) => item.type !== "Transportation"
+      (item: any) => item.type !== "Transportation" && item.type !== "Accommodation"
     );
 
     for (const item of purchasedTicketItems) {
       const ticketType = event.ticketTypes.find((ticket: any) => ticket.name === item.type);
 
       if (!ticketType || Number(item.quantity) > Number(ticketType.quantity || 0)) {
+        order.paymentStatus = "failed";
+        await order.save();
+
+        return NextResponse.redirect(new URL("/checkout/failed", req.url));
+      }
+    }
+
+    const accommodationItem = order.tickets.find((item: any) => item.type === "Accommodation");
+
+    if (accommodationItem) {
+      const remainingRooms =
+        Number(event.accommodationRooms || 0) - Number(event.accommodationBooked || 0);
+
+      if (Number(accommodationItem.quantity) > remainingRooms) {
         order.paymentStatus = "failed";
         await order.save();
 
@@ -100,6 +114,13 @@ export async function GET(req: Request) {
               order.transportation?.departureTime || event.transportDepartureTime,
             vehicleType: order.transportation?.vehicleType || event.transportType || "Bus",
           },
+          accommodation: {
+            included: Boolean(accommodationItem),
+            name: order.accommodation?.name || event.accommodationName || "",
+            address: order.accommodation?.address || event.accommodationAddress || "",
+            checkIn: order.accommodation?.checkIn || event.accommodationCheckIn,
+            checkOut: order.accommodation?.checkOut || event.accommodationCheckOut,
+          },
         });
 
         createdTickets.push(ticket);
@@ -134,6 +155,10 @@ export async function GET(req: Request) {
 
     if (transportItem) {
       update.$inc.transportBooked = Number(transportItem.quantity) || 0;
+    }
+
+    if (accommodationItem) {
+      update.$inc.accommodationBooked = Number(accommodationItem.quantity) || 0;
     }
 
     await Event.findByIdAndUpdate(order.eventId, update);

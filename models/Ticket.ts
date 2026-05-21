@@ -16,6 +16,13 @@ export interface ITicket extends Document {
     departureTime?: Date;
     vehicleType?: string;
   };
+  accommodation?: {
+    included: boolean;
+    name?: string;
+    address?: string;
+    checkIn?: Date;
+    checkOut?: Date;
+  };
 }
 
 const TicketSchema = new Schema<ITicket>(
@@ -37,6 +44,13 @@ const TicketSchema = new Schema<ITicket>(
       pickup: String,
       departureTime: Date,
       vehicleType: String,
+    },
+    accommodation: {
+      included: { type: Boolean, default: false },
+      name: String,
+      address: String,
+      checkIn: Date,
+      checkOut: Date,
     },
   },
   { timestamps: true }

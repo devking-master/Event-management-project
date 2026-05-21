@@ -176,3 +176,21 @@ select {
     border-radius: 1.5rem;
   }
 }
+
+
+/* Cleaner form surfaces */
+.form-section-title {
+  @apply flex items-center gap-3 border-b border-white/10 pb-4;
+}
+
+.form-soft-panel {
+  @apply rounded-2xl border border-white/10 bg-white/[0.025] p-3.5;
+}
+
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}

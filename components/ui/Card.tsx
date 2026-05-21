@@ -15,27 +15,26 @@ export default function Card({
   className = "",
   animate = true,
   delay = 0,
-  hoverGlow = true,
+  hoverGlow = false,
 }: CardProps) {
   return (
     <motion.div
-      initial={animate ? { opacity: 0, y: 16 } : false}
+      initial={animate ? { opacity: 0, y: 14 } : false}
       whileInView={animate ? { opacity: 1, y: 0 } : undefined}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.4, delay }}
-      whileHover={hoverGlow ? { y: -3 } : undefined}
+      transition={{ duration: 0.35, delay }}
+      whileHover={hoverGlow ? { y: -2 } : undefined}
       className={[
-        "glass group relative min-w-0 overflow-hidden rounded-2xl p-4",
-        "xs:p-5 sm:rounded-3xl sm:p-6 md:p-8",
-        "transition-shadow duration-300 hover:shadow-glow",
+        "glass group relative min-w-0 rounded-2xl p-4",
+        "sm:rounded-3xl sm:p-5 lg:p-6",
+        "transition-shadow duration-300",
+        hoverGlow ? "hover:shadow-glow" : "",
         className,
       ].join(" ")}
     >
       {hoverGlow && (
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-neon-purple/5 via-transparent to-neon-cyan/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-neon-purple/5 via-transparent to-neon-cyan/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       )}
-
-      <div className="pointer-events-none absolute right-0 top-0 h-20 w-20 bg-gradient-to-bl from-white/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 sm:h-28 sm:w-28" />
 
       <div className="relative z-10 min-w-0">{children}</div>
     </motion.div>

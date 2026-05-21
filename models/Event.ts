@@ -31,6 +31,17 @@ export interface IEvent extends Document {
   transportBooked: number;
   transportType?: "Bus" | "Van" | "Shuttle" | "Private";
 
+  accommodationAvailable: boolean;
+  isAccommodationFree: boolean;
+  accommodationPrice: number;
+  accommodationName?: string;
+  accommodationAddress?: string;
+  accommodationCheckIn?: Date;
+  accommodationCheckOut?: Date;
+  accommodationRooms: number;
+  accommodationBooked: number;
+  accommodationDetails?: string;
+
   status?: "upcoming" | "live" | "ended";
 }
 
@@ -72,6 +83,17 @@ const EventSchema = new Schema<IEvent>(
       enum: ["Bus", "Van", "Shuttle", "Private"],
       default: "Bus",
     },
+
+    accommodationAvailable: { type: Boolean, default: false },
+    isAccommodationFree: { type: Boolean, default: false },
+    accommodationPrice: { type: Number, default: 0 },
+    accommodationName: String,
+    accommodationAddress: String,
+    accommodationCheckIn: Date,
+    accommodationCheckOut: Date,
+    accommodationRooms: { type: Number, default: 0 },
+    accommodationBooked: { type: Number, default: 0 },
+    accommodationDetails: String,
 
     isFree: { type: Boolean, default: false },
 

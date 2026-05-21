@@ -27,6 +27,8 @@ export async function POST(req: Request) {
       amount,
       includeTransportation,
       transportQuantity,
+      includeAccommodation,
+      accommodationQuantity,
     } = await req.json();
 
     if (!eventId || !ticketType || !quantity) {
@@ -93,7 +95,37 @@ export async function POST(req: Request) {
       transportationTotal = transportationUnitPrice * transportationQty;
     }
 
-    const calculatedAmount = ticketPrice * orderQuantity + transportationTotal;
+    let accommodationQty = 0;
+    let accommodationUnitPrice = 0;
+    let accommodationTotal = 0;
+
+    if (includeAccommodation) {
+      if (!event.accommodationAvailable) {
+        return NextResponse.json(
+          { message: "Accommodation is not available for this event." },
+          { status: 400 }
+        );
+      }
+
+      accommodationQty = Math.max(1, Number(accommodationQuantity || 1) || 1);
+      accommodationUnitPrice = event.isAccommodationFree
+        ? 0
+        : Number(event.accommodationPrice) || 0;
+
+      const remainingRooms =
+        Number(event.accommodationRooms || 0) - Number(event.accommodationBooked || 0);
+
+      if (accommodationQty > remainingRooms) {
+        return NextResponse.json(
+          { message: `Not enough accommodation rooms. Only ${remainingRooms} room(s) left.` },
+          { status: 400 }
+        );
+      }
+
+      accommodationTotal = accommodationUnitPrice * accommodationQty;
+    }
+
+    const calculatedAmount = ticketPrice * orderQuantity + transportationTotal + accommodationTotal;
 
     if (Number(amount) !== calculatedAmount) {
       return NextResponse.json(
@@ -118,6 +150,14 @@ export async function POST(req: Request) {
       });
     }
 
+    if (includeAccommodation && event.accommodationAvailable) {
+      tickets.push({
+        type: "Accommodation",
+        quantity: accommodationQty,
+        price: accommodationUnitPrice,
+      });
+    }
+
     const order = await Order.create({
       userId: user.id,
       eventId,
@@ -130,6 +170,16 @@ export async function POST(req: Request) {
         pickup: event.transportPickup || "",
         departureTime: event.transportDepartureTime,
         vehicleType: event.transportType || "Bus",
+      },
+      accommodation: {
+        included: Boolean(includeAccommodation && event.accommodationAvailable),
+        quantity: accommodationQty,
+        unitPrice: accommodationUnitPrice,
+        total: accommodationTotal,
+        name: event.accommodationName || "",
+        address: event.accommodationAddress || "",
+        checkIn: event.accommodationCheckIn,
+        checkOut: event.accommodationCheckOut,
       },
       totalAmount: calculatedAmount,
       paymentStatus: calculatedAmount === 0 ? "successful" : "pending",
