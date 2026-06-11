@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity,
@@ -39,6 +39,25 @@ export default function MyTickets() {
     fetchTickets();
   }, []);
 
+  const { activeTickets, expiredTickets } = useMemo(() => {
+    const now = new Date();
+    const active: any[] = [];
+    const expired: any[] = [];
+
+    for (const ticket of tickets) {
+      const event = ticket.eventId;
+      const end = event?.endDate ? new Date(event.endDate) : null;
+
+      if (end && end < now) {
+        expired.push(ticket);
+      } else {
+        active.push(ticket);
+      }
+    }
+
+    return { activeTickets: active, expiredTickets: expired };
+  }, [tickets]);
+
   return (
     <div className="space-y-8 pb-16 sm:pb-20">
       <header className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -57,24 +76,10 @@ export default function MyTickets() {
             <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">
               Ticket Status
             </span>
-            <span className="text-xs font-black">All Verified</span>
+            <span className="text-xs font-black">{activeTickets.length} Active</span>
           </div>
         </div>
       </header>
-
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={20} />
-          <input
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.04] p-4 pl-14 font-medium outline-none transition-all placeholder:text-white/20 focus:border-neon-purple/50 focus:bg-white/[0.08]"
-            placeholder="Search by event or ticket code..."
-          />
-        </div>
-
-        <Button variant="secondary" icon={Filter}>
-          Filter
-        </Button>
-      </div>
 
       <div className="grid gap-5 md:grid-cols-2">
         <AnimatePresence mode="popLayout">
@@ -101,7 +106,8 @@ export default function MyTickets() {
               </Button>
             </div>
           ) : (
-            tickets.map((ticket: any, idx: number) => {
+            /* Active tickets section */
+            (activeTickets.length > 0 ? activeTickets : []).map((ticket: any, idx: number) => {
               const event = ticket.eventId;
               const hasTransport = Boolean(ticket.transportation?.included);
               const hasAccommodation = Boolean(ticket.accommodation?.included);
@@ -131,7 +137,7 @@ export default function MyTickets() {
                       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
 
                       <div className="absolute right-6 top-4 rounded-2xl border border-white/10 bg-black/60 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-emerald-400 backdrop-blur-xl">
-                        Verified Ticket
+                        Active Ticket
                       </div>
                     </div>
 
@@ -184,7 +190,7 @@ export default function MyTickets() {
 
                             <p className="flex gap-2">
                               <Clock size={15} className="shrink-0 text-neon-purple" />
-                              Check-in:{" "}
+                              Check-in: {" "}
                               {ticket.accommodation?.checkIn
                                 ? new Date(ticket.accommodation.checkIn).toLocaleString()
                                 : "Not specified"}
@@ -210,7 +216,7 @@ export default function MyTickets() {
 
                             <p className="flex gap-2">
                               <Clock size={15} className="shrink-0 text-neon-purple" />
-                              Departure:{" "}
+                              Departure: {" "}
                               {ticket.transportation?.departureTime
                                 ? new Date(ticket.transportation.departureTime).toLocaleString()
                                 : "Not specified"}
@@ -263,6 +269,51 @@ export default function MyTickets() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Ticket History Section */}
+      {loading ? null : (
+        <section className="space-y-6">
+          <h2 className="text-2xl font-black tracking-tight">Ticket History</h2>
+
+          {expiredTickets.length === 0 ? (
+            <p className="text-sm text-white/30">No expired tickets yet.</p>
+          ) : (
+            <div className="grid gap-5 md:grid-cols-2">
+              <AnimatePresence>
+                {expiredTickets.map((ticket: any, idx: number) => {
+                  const event = ticket.eventId;
+                  return (
+                    <motion.div
+                      key={ticket._id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.03 }}
+                    >
+                      <Card className="overflow-hidden border-white/10 p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 className="text-xl font-black">{event?.title}</h3>
+                            <p className="mt-1 text-sm text-white/40">
+                              Ended: {event?.endDate ? new Date(event.endDate).toLocaleString() : "-"}
+                            </p>
+                            <p className="mt-3 text-sm font-mono text-white/60">{ticket.code}</p>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <div className="rounded-2xl border border-red-500/20 bg-red-600/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-300">
+                              Expired
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }
